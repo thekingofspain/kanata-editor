@@ -1,5 +1,3 @@
-
-
 export interface KeyboardPreset {
   name: string;
   data: (string | { x?: number; y?: number; w?: number; h?: number; w2?: number; h2?: number; x2?: number; y2?: number; r?: number; rx?: number; ry?: number; a?: number })[][];
@@ -68,6 +66,7 @@ function generateId(): string {
 
 function parseKeyLabel(cell: string): { label: string } {
   if (typeof cell !== 'string') return { label: '' };
+  if (!cell.trim()) return { label: '' };
   const parts = cell.split('\n');
   return { label: parts[0] || '' };
 }
@@ -80,114 +79,55 @@ export interface ParsedKeyboard {
 
 export function loadPreset(preset: KeyboardPreset): ParsedKeyboard {
   const keys: import('./index').Key[] = [];
-  
-  // Track accumulated position and size as we parse the row
   let currentX = 0;
   let currentY = 0;
   let maxX = 0;
   let maxY = 0;
-  
-  // Process each row
+  let keyWidth = 1;
+  let keyHeight = 1;
+
   for (let rowIdx = 0; rowIdx < preset.data.length; rowIdx++) {
     const row = preset.data[rowIdx];
-    let rowX = 0;
-    
-    // Reset x at start of each row but track row-level y
-    currentX = rowX;
-    
+    currentX = 0;
+    keyWidth = 1;
+    keyHeight = 1;
+
     for (let colIdx = 0; colIdx < row.length; colIdx++) {
       const cell = row[colIdx];
-      
-      // Handle object properties (key properties like width, x offset, etc)
-      if (typeof cell === 'object' && cell !== null) {
+
+      if (typeof cell === 'object' && cell !== null && !Array.isArray(cell)) {
         const props = cell as Record<string, unknown>;
-        
-        // Apply x/y offsets
         if (typeof props.x === 'number') currentX += props.x;
         if (typeof props.y === 'number') currentY += props.y;
-        
-        // Skip if this is just a position marker, not a key
-        // Keys with width > 1 or height > 1 are handled when we see the string
+        if (typeof props.w === 'number') keyWidth = props.w;
+        if (typeof props.h === 'number') keyHeight = props.h;
         continue;
       }
-      
-      // Handle string (key label)
-      if (typeof cell === 'string' && cell.trim()) {
+
+      if (typeof cell === 'string') {
         const label = parseKeyLabel(cell).label;
-        if (label) {
-          // Find the most recent width/height for this key by looking backward
-          let keyWidth = 1;
-          let keyHeight = 1;
-          
-          // Check previous cells in this row for width/height
-          for (let i = colIdx - 1; i >= 0; i--) {
-            const prevCell = row[i];
-            if (typeof prevCell === 'object' && prevCell !== null) {
-              const p = prevCell as Record<string, unknown>;
-              if (typeof p.w === 'number') keyWidth = p.w;
-              if (typeof p.h === 'number') keyHeight = p.h;
-            }
-          }
-          
-          // Also check next cells - sometimes width comes after!
-          for (let i = colIdx + 1; i < row.length; i++) {
-            const nextCell = row[i];
-            if (typeof nextCell === 'object' && nextCell !== null) {
-              const p = nextCell as Record<string, unknown>;
-              if (typeof p.w === 'number' && (p as any).x === undefined) keyWidth = p.w;
-              if (typeof p.h === 'number' && (p as any).y === undefined) keyHeight = p.h;
-            }
-            // Stop looking once we hit another key
-            if (typeof nextCell === 'string' && nextCell.trim()) break;
-          }
-          
-          keys.push({
-            id: generateId(),
-            x: currentX,
-            y: currentY,
-            width: keyWidth,
-            height: keyHeight,
-            rotation: 0,
-            shape: 'rounded',
-            color: '#ffffff',
-            hardware: { row: rowIdx, col: colIdx, layer: 0 },
-            function: { keycode: '' },
-            legend: { center: { text: label, color: '#000' } }
-          });
-          
-          maxX = Math.max(maxX, currentX + keyWidth);
-          maxY = Math.max(maxY, currentY + keyHeight);
-        }
-      }
-      
-      // Move to next position
-      // If this was a key with width, skip that many positions
-      if (typeof cell === 'string' && cell.trim()) {
-        // Find width for this specific key
-        let keyWidth = 1;
-        for (let i = colIdx - 1; i >= 0; i--) {
-          const prevCell = row[i];
-          if (typeof prevCell === 'object' && prevCell !== null) {
-            const p = prevCell as Record<string, unknown>;
-            if (typeof p.w === 'number') keyWidth = p.w;
-          }
-        }
-        for (let i = colIdx + 1; i < row.length; i++) {
-          const nextCell = row[i];
-          if (typeof nextCell === 'object' && nextCell !== null) {
-            const p = nextCell as Record<string, unknown>;
-            if (typeof p.w === 'number' && (p as any).x === undefined) keyWidth = p.w;
-          }
-          if (typeof nextCell === 'string' && nextCell.trim()) break;
-        }
+        keys.push({
+          id: generateId(),
+          x: currentX,
+          y: currentY,
+          width: keyWidth,
+          height: keyHeight,
+          rotation: 0,
+          shape: 'rounded',
+          color: '#ffffff',
+          hardware: { row: rowIdx, col: colIdx, layer: 0 },
+          function: { keycode: '' },
+          legend: label ? { center: { text: label, color: '#000' } } : {}
+        });
+        maxX = Math.max(maxX, currentX + keyWidth);
+        maxY = Math.max(maxY, currentY + keyHeight);
         currentX += keyWidth;
+        keyWidth = 1;
+        keyHeight = 1;
       }
     }
-    
-    // Move to next row
     currentY++;
-    currentX = 0;
   }
-  
+
   return { keys, width: maxX, height: maxY };
 }

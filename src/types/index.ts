@@ -94,7 +94,7 @@ export interface SelectionState {
   anchorKey: string | null;
 }
 
-export const STANDARD_KEY_SIZES = [1, 1.25, 1.5, 1.75, 2, 2.25, 2.75] as const;
+export const STANDARD_KEY_SIZES = [0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2, 2.25, 2.75, 3, 4, 5, 5.5, 6, 6.25, 6.5, 7] as const;
 
 export const DEFAULT_UNIT_SIZE = 19.05;
 
