@@ -69,7 +69,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
       ))}
       
       {isSelected && (
-        <rect x={-1} y={-1} width={width + 2} height={height + 2} fill="none" stroke="#000" strokeWidth={2} rx="3" />
+        <rect x={-1} y={-1} width={width + 2} height={height + 2} fill="none" stroke="#0066ff" strokeWidth={2} rx="3" />
       )}
     </g>
   );
