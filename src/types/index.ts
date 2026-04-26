@@ -106,3 +106,6 @@ export const LEGEND_POSITIONS: LegendPosition[] = [
   'top', 'topLeft', 'topRight', 'center', 
   'bottom', 'bottomLeft', 'bottomRight', 'left', 'right'
 ];
+
+export { KEYBOARD_PRESETS, loadPreset } from './presets';
+export type { KeyboardPreset, ParsedKeyboard } from './presets';

@@ -1,9 +1,10 @@
 import { useEditorStore } from '../store';
-import { STANDARD_KEY_SIZES } from '../types';
+import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset } from '../types';
 import { useState } from 'react';
 
 export const Toolbar: React.FC = () => {
   const [currentKeyWidth, setCurrentKeyWidth] = useState(1);
+  const [selectedPreset, setSelectedPreset] = useState("");
   const {
     layout,
     canvas,
@@ -22,8 +23,41 @@ export const Toolbar: React.FC = () => {
     toggleGrid,
     setCanvasZoom,
     selectAll,
-    clearSelection
+    clearSelection,
+    loadLayout
   } = useEditorStore();
+  
+  const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const presetName = e.target.value;
+    setSelectedPreset(presetName);
+    
+    if (!presetName) return;
+    
+    const preset = KEYBOARD_PRESETS.find(p => p.name === presetName);
+    if (!preset) return;
+    
+    const parsed = loadPreset(preset);
+    if (parsed.keys.length > 0) {
+      loadLayout({
+        ...layout,
+        keys: parsed.keys,
+        modifiedAt: new Date().toISOString()
+      });
+      
+      // Calculate zoom to fit the keyboard
+      const container = document.querySelector('.canvas-container');
+      if (container) {
+        const rect = container.getBoundingClientRect();
+        const padding = 40;
+        const width = parsed.width || 1;
+        const height = parsed.height || 1;
+        const scaleX = (rect.width - padding * 2) / width;
+        const scaleY = (rect.height - padding * 2) / height;
+        const newZoom = Math.min(scaleX, scaleY, 2);
+        setCanvasZoom(newZoom);
+      }
+    }
+  };
 
 const handleAddKey = () => {
     // Always add at center (0, 0) and select the new key
@@ -124,6 +158,16 @@ const handleAddKey = () => {
           a.download = `${layout.name || 'layout'}.json`;
           a.click();
         }}>Save</button>
+      </div>
+
+      {/* Preset keyboard layouts */}
+      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
+        <select value={selectedPreset} onChange={handlePresetChange}>
+          <option value="">Load Preset...</option>
+          {KEYBOARD_PRESETS.map(preset => (
+            <option key={preset.name} value={preset.name}>{preset.name}</option>
+          ))}
+        </select>
       </div>
 
       {/* Key operations */}
