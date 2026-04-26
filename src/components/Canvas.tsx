@@ -41,6 +41,8 @@ interface KeyElementProps {
   onDoubleClick: (id: string) => void;
 }
 
+const KEY_GAP = 0.08;
+
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
   isSelected,
@@ -49,13 +51,13 @@ const KeyElement: React.FC<KeyElementProps> = ({
   onDragStart,
   onDoubleClick
 }) => {
-  const width = keyData.width * unitSize;
-  const height = keyData.height * unitSize;
+  const width = keyData.width * unitSize - KEY_GAP;
+  const height = keyData.height * unitSize - KEY_GAP;
   const centerX = width / 2;
   const centerY = height / 2;
   
-const transform = `translate(${keyData.x * unitSize}, ${keyData.y * unitSize}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
-         
+  const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2}, ${keyData.y * unitSize + KEY_GAP / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
+          
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
       <rect width={width} height={height} fill={keyData.color} rx="2" stroke="#000" strokeWidth="1" />
@@ -67,7 +69,7 @@ const transform = `translate(${keyData.x * unitSize}, ${keyData.y * unitSize}) r
       ))}
       
       {isSelected && (
-        <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={2} />
+        <rect x={-2} y={-2} width={width + 4} height={height + 4} fill="none" stroke="#0066ff" strokeWidth={2} rx="4" />
       )}
     </g>
   );
@@ -378,12 +380,17 @@ export const Canvas: React.FC = () => {
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
           <g id="grid-layer">{gridLines}</g>
           <g id="keys-layer">
-            {layout.keys.map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={selection.keys.has(key.id)} unitSize={unitSize} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+            {layout.keys.filter(key => !selection.keys.has(key.id)).map(key => (
+              <KeyElement key={key.id} keyData={key} isSelected={false} unitSize={unitSize} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+            ))}
+          </g>
+          <g id="selected-keys-layer">
+            {layout.keys.filter(key => selection.keys.has(key.id)).map(key => (
+              <KeyElement key={key.id} keyData={key} isSelected={true} unitSize={unitSize} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
             ))}
           </g>
           {selectionBox && (
-            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x) * unitSize} y={Math.min(selectionBox.start.y, selectionBox.end.y) * unitSize} width={Math.abs(selectionBox.end.x - selectionBox.start.x) * unitSize} height={Math.abs(selectionBox.end.y - selectionBox.start.y) * unitSize} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / zoom} strokeDasharray={`${4 / zoom},${2 / zoom}`} />
+            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x) * unitSize} y={Math.min(selectionBox.start.y, selectionBox.end.y) * unitSize} width={Math.abs(selectionBox.end.x - selectionBox.start.x) * unitSize} height={Math.abs(selectionBox.end.y - selectionBox.start.y) * unitSize} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / zoom} strokeDasharray={`${4 / zoom},${2 / zoom}`} rx="4" />
           )}
         </g>
       </svg>
