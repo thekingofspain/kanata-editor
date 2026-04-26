@@ -42,6 +42,7 @@ interface KeyElementProps {
 }
 
 const KEY_GAP = 0.08;
+const STROKE_WIDTH = 1;
 
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
@@ -51,12 +52,12 @@ const KeyElement: React.FC<KeyElementProps> = ({
   onDragStart,
   onDoubleClick
 }) => {
-  const width = keyData.width * unitSize - KEY_GAP;
-  const height = keyData.height * unitSize - KEY_GAP;
+  const width = keyData.width * unitSize - KEY_GAP - STROKE_WIDTH;
+  const height = keyData.height * unitSize - KEY_GAP - STROKE_WIDTH;
   const centerX = width / 2;
   const centerY = height / 2;
   
-  const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2}, ${keyData.y * unitSize + KEY_GAP / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
+  const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}, ${keyData.y * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
           
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
