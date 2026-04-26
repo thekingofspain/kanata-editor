@@ -64,7 +64,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
       <rect width={width} height={height} fill={keyData.color} rx="2" stroke="#000" strokeWidth="1" />
       
       {Object.entries(keyData.legend).map(([position, legend]) => legend && (
-        <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={legend.fontSize || 12} textAnchor="middle" dominantBaseline="middle" {...getLegendPosition(position, width, height)}>
+        <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={legend.fontSize || 12} textAnchor="middle" dominantBaseline="central" dy="0.05em" {...getLegendPosition(position, width, height)}>
           {legend.text}
         </text>
       ))}
