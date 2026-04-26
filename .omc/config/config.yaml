@@ -1,0 +1,33 @@
+# BMAD Method v6 - Project Configuration
+# Generated: 2026-04-25
+# Project: kanata-editor
+
+# BMAD Version
+bmad_version: "6.0.0"
+
+# Project Information
+project_name: "kanata-editor"
+project_type: "web-app"
+project_level: 2  # Full PRD with architecture
+
+# Output Configuration
+output_folder: "docs"
+stories_folder: "docs/stories"
+
+# Language Settings
+communication_language: "English"
+document_output_language: "English"
+
+# SSD Configuration
+ssd_enabled: true
+tea_cycle_enabled: true
+
+# Project Metadata
+project_description: "A Visio-like keyboard layout editor SPA for creating custom keyboard layouts with drag/drop, copy/paste, group/ungroup, and SVG export capabilities"
+repository_url: ""
+team_size: 1
+tech_stack:
+  - "React"
+  - "TypeScript"
+  - "SVG"
+  - "Single Page Application"

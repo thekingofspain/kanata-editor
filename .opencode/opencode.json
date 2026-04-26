@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "permission": {
+    "read": {
+      "C:/Users/ErikBerg/source/kanata-editor/.opencode/get-shit-done/*": "allow"
+    },
+    "external_directory": {
+      "C:/Users/ErikBerg/source/kanata-editor/.opencode/get-shit-done/*": "allow"
+    }
+  }
+}

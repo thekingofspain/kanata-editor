@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "project_name": "kanata-editor",
+  "project_level": 2,
+  "active": true,
+  "current_phase": 1,
+  "created_at": "2026-04-25T12:00:00Z",
+  "updated_at": "2026-04-25T12:05:00Z",
+  "ssd_enabled": true,
+  "phases": {
+    "1": {
+      "name": "Analysis",
+      "tea_step": "execute",
+      "tasks": {
+        "decomposed_at": "2026-04-25T12:05:00Z",
+        "items": [
+          {
+            "id": "p1-t1",
+            "name": "Market research: keyboard layout editor landscape",
+            "agent": "document-specialist",
+            "model": "sonnet",
+            "status": "pending",
+            "output_path": "docs/ssd/phase-1/market-research.md",
+            "description": "Research existing keyboard layout tools, visual editors, and CAD software. Identify market gaps and opportunities."
+          },
+          {
+            "id": "p1-t2",
+            "name": "User persona definition: keyboard enthusiasts",
+            "agent": "analyst",
+            "model": "opus",
+            "status": "pending",
+            "output_path": "docs/ssd/phase-1/user-personas.md",
+            "description": "Define primary user personas: keyboard enthusiasts, custom keyboard builders, mechanical keyboard hobbyists. Document pain points and needs."
+          },
+          {
+            "id": "p1-t3",
+            "name": "Competitive analysis: existing tools comparison",
+            "agent": "analyst",
+            "model": "sonnet",
+            "status": "pending",
+            "output_path": "docs/ssd/phase-1/competitive-analysis.md",
+            "description": "Compare features of KLE (Keyboard Layout Editor), Keyboard Firmware Builder, and similar tools. Identify feature gaps."
+          },
+          {
+            "id": "p1-t4",
+            "name": "Value proposition refinement",
+            "agent": "analyst",
+            "model": "opus",
+            "status": "pending",
+            "output_path": "docs/ssd/phase-1/value-proposition.md",
+            "description": "Refine core value proposition based on market research. Articulate unique differentiators."
+          },
+          {
+            "id": "p1-t5",
+            "name": "Technical constraint analysis",
+            "agent": "architect",
+            "model": "sonnet",
+            "status": "pending",
+            "output_path": "docs/ssd/phase-1/constraint-analysis.md",
+            "description": "Identify technical constraints: browser limitations, SVG capabilities, performance benchmarks, UX patterns."
+          }
+        ]
+      },
+      "architect_review": null,
+      "plannotator_review": null
+    }
+  },
+  "cross_phase_traceability": {
+    "phase_1_to_2": { "validated": false },
+    "phase_2_to_3": { "validated": false },
+    "phase_3_to_4": { "validated": false }
+  }
+}
