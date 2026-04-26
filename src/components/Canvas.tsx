@@ -67,13 +67,7 @@ const transform = `translate(${keyData.x * unitSize}, ${keyData.y * unitSize}) r
       ))}
       
       {isSelected && (
-        <g className="selection-overlay">
-          <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={2} />
-          <circle cx={0} cy={0} r={4} fill="#fff" stroke="#0066ff" strokeWidth={1} />
-          <circle cx={width} cy={0} r={4} fill="#fff" stroke="#0066ff" strokeWidth={1} />
-          <circle cx={0} cy={height} r={4} fill="#fff" stroke="#0066ff" strokeWidth={1} />
-          <circle cx={width} cy={height} r={4} fill="#fff" stroke="#0066ff" strokeWidth={1} />
-        </g>
+        <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={2} />
       )}
     </g>
   );
