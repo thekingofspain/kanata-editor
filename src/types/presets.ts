@@ -11,21 +11,21 @@ export const KEYBOARD_PRESETS: KeyboardPreset[] = [
   {
     name: "ANSI 104",
     data: [
-      ["Esc",{"x":1},"F1","F2","F3","F4",{"x":0.5},"F5","F6","F7","F8",{"x":0.5},"F9","F10","F11","F12",{"x":0.25},"PrtSc","Scroll Lock","Pause\nBreak"],
-      [{"y":0.5},"~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace",{"x":0.25},"Insert","Home","PgUp",{"x":0.25},"Num Lock","/","*","-"],
-      [{"w":1.5},"Tab","Q","W","E","R","T","Y","U","I","O","P","{\n[","}\n]",{"w":1.5},"|\n\\",{"x":0.25},"Delete","End","PgDn",{"x":0.25},"7\nHome","8\nUp","9\nPgUp",{"h":2},"+"],
-      [{"w":1.75},"Caps Lock","A","S","D","F","G","H","J","K","L",":\n;","\"\n'",{"w":2.25},"Enter",{"x":3.5},"4\nLeft","5","6\nRight"],
-      [{"w":2.25},"Shift","Z","X","C","V","B","N","M","<\n,",">\n.","?\n/",{"w":2.75},"Shift",{"x":1.25},"Up",{"x":1.25},"1\nEnd","2\nDown","3\nPgDn",{"h":2},"Enter"],
-      [{"w":1.25},"Ctrl",{"w":1.25},"Win",{"w":1.25},"Alt",{"w":6.25},"",{"w":1.25},"Alt",{"w":1.25},"Win",{"w":1.25},"Menu",{"w":1.25},"Ctrl",{"x":0.25},"Left","Down","Right",{"x":0.25,"w":2},"0\nIns",".\nDel"]
+      ["Esc",{"x":1},"F1","F2","F3","F4",{"x":0.5},"F5","F6","F7","F8",{"x":0.5},"F9","F10","F11","F12",{"x":0.25},"PrtSc","Scroll\nLock","Pause\nBreak"],
+      [{"y":0.5},"`\n~","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace",{"x":0.25},"Insert","Home","PgUp",{"x":0.25},"Num\nLock","/\n","*\n","-\n"],
+      [{"w":1.5},"Tab","Q","W","E","R","T","Y","U","I","O","P","{\n[","}\n]",{"w":1.5},"|\n\\",{"x":0.25},"Delete","End","PgDn",{"x":0.25},"7\nHome","8\nUp","9\nPgUp",{"h":2},"+\n"],
+      [{"w":1.75},"Caps\nLock","A","S","D","F","G","H","J","K","L",":\n;","\"\n'",{"w":2.25},"Enter",{"x":3.5},"4\nLeft","5\n","6\nRight"],
+      [{"w":2.25},"Shift\n","Z","X","C","V","B","N","M",",\n<",".\n>","/\n?",{"w":2.75},"Shift\n",{"x":1.25},"Up\n",{"x":1.25},"1\nEnd","2\nDown","3\nPgDn",{"h":2},"Enter\n"],
+      [{"w":1.25},"Ctrl",{"w":1.25},"Win",{"w":1.25},"Alt",{"w":6.25},"",{"w":1.25},"Alt",{"w":1.25},"Win",{"w":1.25},"Menu",{"w":1.25},"Ctrl",{"x":0.25},"Left\n","Down\n","Right\n",{"x":0.25,"w":2},"0\nIns",".\nDel"]
     ]
   },
   {
     name: "Default 60%",
     data: [
-      ["~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace"],
+      ["`\n~","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace"],
       [{"w":1.5},"Tab","Q","W","E","R","T","Y","U","I","O","P","{\n[","}\n]",{"w":1.5},"|\n\\"],
       [{"w":1.75},"Caps Lock","A","S","D","F","G","H","J","K","L",":\n;","\"\n'",{"w":2.25},"Enter"],
-      [{"w":2.25},"Shift","Z","X","C","V","B","N","M","<\n,",">\n.","?\n/",{"w":2.75},"Shift"],
+      [{"w":2.25},"Shift","Z","X","C","V","B","N","M",",\n<",".\n>","/\n?",{"w":2.75},"Shift"],
       [{"w":1.25},"Ctrl",{"w":1.25},"Win",{"w":1.25},"Alt",{"w":6.25},"",{"w":1.25},"Alt",{"w":1.25},"Win",{"w":1.25},"Menu",{"w":1.25},"Ctrl"]
     ]
   },
@@ -42,10 +42,10 @@ export const KEYBOARD_PRESETS: KeyboardPreset[] = [
     name: "TKL (Tenkeyless)",
     data: [
       ["Esc",{"x":1},"F1","F2","F3","F4",{"x":0.5},"F5","F6","F7","F8",{"x":0.5},"F9","F10","F11","F12"],
-      [{"y":0.5},"~\n`","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace"],
+      [{"y":0.5},"`\n~","!\n1","@\n2","#\n3","$\n4","%\n5","^\n6","&\n7","*\n8","(\n9",")\n0","_\n-","+\n=",{"w":2},"Backspace"],
       [{"w":1.5},"Tab","Q","W","E","R","T","Y","U","I","O","P","{\n[","}\n]",{"w":1.5},"|\n\\"],
       [{"w":1.75},"Caps Lock","A","S","D","F","G","H","J","K","L",":\n;","\"\n'",{"w":2.25},"Enter"],
-      [{"w":2.25},"Shift","Z","X","C","V","B","N","M","<\n,",">\n.","?\n/",{"w":2.75},"Shift"],
+      [{"w":2.25},"Shift","Z","X","C","V","B","N","M",",\n<",".\n>","/\n?",{"w":2.75},"Shift"],
       [{"w":1.25},"Ctrl",{"w":1.25},"Win",{"w":1.25},"Alt",{"w":6.25},"",{"w":1.25},"Alt",{"w":1.25},"Win",{"w":1.25},"Menu",{"w":1.25},"Ctrl"]
     ]
   },
@@ -69,8 +69,8 @@ function parseKeyLabel(cell: string): { primary: string; secondary?: string } {
   if (!cell.trim()) return { primary: '' };
   const parts = cell.split('\n');
   return { 
-    primary: parts[0] || '',
-    secondary: parts.length > 1 ? parts[1] : undefined
+    primary: parts.length > 1 ? parts[1] : parts[0] || '',
+    secondary: parts.length > 1 ? parts[0] : undefined
   };
 }
 
@@ -120,11 +120,11 @@ export function loadPreset(preset: KeyboardPreset): ParsedKeyboard {
             color: '#ffffff',
             hardware: { row: rowIdx, col: colIdx, layer: 0 },
             function: { keycode: '' },
-            legend: {
+legend: {
               primary: parsed.primary,
               primaryColor: '#000',
-              secondary: parsed.secondary || undefined,
-              secondaryColor: '#666'
+              secondary: parsed.secondary,
+              secondaryColor: '#000'
             }
           });
         maxX = Math.max(maxX, currentX + keyWidth);

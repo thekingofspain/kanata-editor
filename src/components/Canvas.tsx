@@ -43,8 +43,83 @@ interface KeyElementProps {
 
 const KEY_GAP = 0.08;
 const STROKE_WIDTH = 1;
-const PRIMARY_FONT_SIZE = 11;
-const SECONDARY_FONT_SIZE = 6;
+const SECONDARY_FONT_SIZE = 5;
+const KEY_FONT_PRIMARY = '"Barlow Condensed", sans-serif';
+const KEY_FONT_SECONDARY = '"Nunito Sans", sans-serif';
+
+const CHAR_CATEGORIES = {
+  modifier: /^(Enter|Tab|Esc|Delete|Shift|Ctrl|Alt|Win|Menu|Caps Lock|Backspace|Insert|Home|End|PgUp|PgDn|Up|Down|Left|Right|Num Lock|Scroll Lock|Pause Break|F1|F2|F3|F4|F5|F6|F7|F8|F9|F10|F11|F12)$/,
+  letter: /^[A-Z]$/,
+  digit: /^[0-9]$/,
+  punctuation: /^[,.<>\/?;:'"[\]{}|\\`~!@#$%^&*()_=+-]$/,
+};
+
+const VISUAL_WEIGHT_ADJUST: Record<string, number> = {
+  '/': 0.70,
+  '\\': 0.70,
+  '|': 0.70,
+  '!': 0.80,
+  'i': 0.85,
+  'l': 0.85,
+  'I': 0.80,
+  'j': 0.85,
+  't': 0.85,
+  'f': 0.85,
+  '{': 0.85,
+  '}': 0.85,
+  '[': 0.85,
+  ']': 0.85,
+  ',': 1.15,
+  '.': 1.15,
+  ':': 1.10,
+  ';': 1.10,
+  "'": 1.15,
+  '"': 1.15,
+  '-': 1.10,
+  '_': 1.10,
+  ' ': 1.0,
+};
+
+function getCharCategory(char: string): 'modifier' | 'letter' | 'digit' | 'punctuation' | 'other' {
+  if (CHAR_CATEGORIES.modifier.test(char)) return 'modifier';
+  if (CHAR_CATEGORIES.letter.test(char)) return 'letter';
+  if (CHAR_CATEGORIES.digit.test(char)) return 'digit';
+  if (CHAR_CATEGORIES.punctuation.test(char)) return 'punctuation';
+  return 'other';
+}
+
+const FONT_SIZE_RATIOS: Record<'modifier' | 'letter' | 'digit' | 'punctuation' | 'other', number> = {
+  modifier: 0.25,
+  letter: 0.50,
+  digit: 0.375,
+  punctuation: 0.375,
+  other: 0.40,
+};
+
+function getScaledFontSize(char: string, keyHeight: number, isPrimary: boolean): number {
+  const category = getCharCategory(char);
+  const baseRatio = FONT_SIZE_RATIOS[category];
+  const targetHeight = keyHeight * baseRatio;
+  
+  const firstChar = char.charAt(0);
+  const weightAdjust = VISUAL_WEIGHT_ADJUST[firstChar] || 1.0;
+  
+  const scaleFactor = isPrimary ? 0.80 : 1.0;
+  const len = char.length;
+  const minSize = isPrimary ? 5 : 4;
+  
+  if (len <= 1) {
+    return Math.max(minSize, targetHeight * 0.85 * weightAdjust * scaleFactor);
+  }
+  if (len === 2) {
+    return Math.max(minSize, targetHeight * 0.70 * weightAdjust * scaleFactor);
+  }
+  return Math.max(minSize, targetHeight * 0.60 * weightAdjust * scaleFactor);
+}
+
+function getVerticalPosition(isSecondary: boolean): number {
+  return isSecondary ? 0.28 : 0.58;
+}
 
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
@@ -62,7 +137,16 @@ const KeyElement: React.FC<KeyElementProps> = ({
   const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}, ${keyData.y * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
   
   const { legend } = keyData;
-  const hasSecondary = legend.secondary && legend.secondary.length > 0;
+  const hasSecondary = !!legend.secondary;
+  
+  const primaryChar = legend.primary || '';
+  const secondaryChar = legend.secondary || '';
+  
+  const primaryFontSize = getScaledFontSize(primaryChar, height, true);
+  const secondaryFontSize = hasSecondary ? getScaledFontSize(secondaryChar, height, false) : SECONDARY_FONT_SIZE;
+  
+  const primaryY = getVerticalPosition(false) * height;
+  const secondaryY = hasSecondary ? getVerticalPosition(true) * height : height * 0.3;
   
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
@@ -71,15 +155,15 @@ const KeyElement: React.FC<KeyElementProps> = ({
       {legend.primary && (
         hasSecondary ? (
           <>
-            <text x={width / 2} y={height * 0.38} fill={legend.primaryColor || '#000'} fontSize={PRIMARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+            <text x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
               {legend.primary}
             </text>
-            <text x={width / 2} y={height * 0.72} fill={legend.secondaryColor || '#666'} fontSize={SECONDARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+            <text x={width / 2} y={secondaryY} fill={legend.secondaryColor || '#000'} fontSize={secondaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_SECONDARY}>
               {legend.secondary}
             </text>
           </>
         ) : (
-          <text x={width / 2} y={height / 2} fill={legend.primaryColor || '#000'} fontSize={PRIMARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+          <text x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
             {legend.primary}
           </text>
         )
