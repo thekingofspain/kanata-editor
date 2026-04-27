@@ -64,11 +64,14 @@ function generateId(): string {
   return Math.random().toString(36).substring(2, 11);
 }
 
-function parseKeyLabel(cell: string): { label: string } {
-  if (typeof cell !== 'string') return { label: '' };
-  if (!cell.trim()) return { label: '' };
+function parseKeyLabel(cell: string): { primary: string; secondary?: string } {
+  if (typeof cell !== 'string') return { primary: '' };
+  if (!cell.trim()) return { primary: '' };
   const parts = cell.split('\n');
-  return { label: parts[0] || '' };
+  return { 
+    primary: parts[0] || '',
+    secondary: parts.length > 1 ? parts[1] : undefined
+  };
 }
 
 export interface ParsedKeyboard {
@@ -105,20 +108,25 @@ export function loadPreset(preset: KeyboardPreset): ParsedKeyboard {
       }
 
       if (typeof cell === 'string') {
-        const label = parseKeyLabel(cell).label;
-        keys.push({
-          id: generateId(),
-          x: currentX,
-          y: currentY,
-          width: keyWidth,
-          height: keyHeight,
-          rotation: 0,
-          shape: 'rounded',
-          color: '#ffffff',
-          hardware: { row: rowIdx, col: colIdx, layer: 0 },
-          function: { keycode: '' },
-          legend: label ? { center: { text: label, color: '#000' } } : {}
-        });
+        const parsed = parseKeyLabel(cell);
+          keys.push({
+            id: generateId(),
+            x: currentX,
+            y: currentY,
+            width: keyWidth,
+            height: keyHeight,
+            rotation: 0,
+            shape: 'rounded',
+            color: '#ffffff',
+            hardware: { row: rowIdx, col: colIdx, layer: 0 },
+            function: { keycode: '' },
+            legend: {
+              primary: parsed.primary,
+              primaryColor: '#000',
+              secondary: parsed.secondary || undefined,
+              secondaryColor: '#666'
+            }
+          });
         maxX = Math.max(maxX, currentX + keyWidth);
         maxY = Math.max(maxY, currentY + keyHeight);
         currentX += keyWidth;

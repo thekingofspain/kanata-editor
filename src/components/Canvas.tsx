@@ -43,6 +43,8 @@ interface KeyElementProps {
 
 const KEY_GAP = 0.08;
 const STROKE_WIDTH = 1;
+const PRIMARY_FONT_SIZE = 11;
+const SECONDARY_FONT_SIZE = 6;
 
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
@@ -58,87 +60,36 @@ const KeyElement: React.FC<KeyElementProps> = ({
   const centerY = height / 2;
   
   const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}, ${keyData.y * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
-          
+  
+  const { legend } = keyData;
+  const hasSecondary = legend.secondary && legend.secondary.length > 0;
+  
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
       <rect width={width} height={height} fill={keyData.color} rx="2" stroke="#000" strokeWidth="1" />
       
-      {Object.entries(keyData.legend).map(([position, legend]) => legend ? (
-          (() => {
-            const pos = getLegendPosition(position, width, height);
-            const { lines, fontSize } = splitTextForFit(legend.text, width, height, legend.fontSize || MAX_FONT_SIZE);
-            const lineHeight = fontSize * 1.3;
-            return (
-              <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={fontSize} textAnchor="middle" dominantBaseline="central" x={pos.x} y={pos.y}>
-                {lines.map((line, i) => (
-                  <tspan key={i} x={pos.x} dy={i === 0 ? 0 : lineHeight}>{line}</tspan>
-                ))}
-              </text>
-            );
-          })()
-        ) : null)}
+      {legend.primary && (
+        hasSecondary ? (
+          <>
+            <text x={width / 2} y={height * 0.38} fill={legend.primaryColor || '#000'} fontSize={PRIMARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+              {legend.primary}
+            </text>
+            <text x={width / 2} y={height * 0.72} fill={legend.secondaryColor || '#666'} fontSize={SECONDARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+              {legend.secondary}
+            </text>
+          </>
+        ) : (
+          <text x={width / 2} y={height / 2} fill={legend.primaryColor || '#000'} fontSize={PRIMARY_FONT_SIZE} textAnchor="middle" dominantBaseline="central" fontFamily="sans-serif">
+            {legend.primary}
+          </text>
+        )
+      )}
       
       {isSelected && (
         <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={1} rx="2" />
       )}
     </g>
   );
-};
-
-const MIN_FONT_SIZE = 6;
-const MAX_FONT_SIZE = 12;
-const CHAR_WIDTH_RATIO = 0.6;
-
-const splitTextForFit = (text: string, maxWidth: number, maxHeight: number, baseFontSize: number): { lines: string[]; fontSize: number } => {
-  const maxTextWidth = maxWidth * 0.85;
-  const maxTextHeight = maxHeight * 0.7;
-  
-  const charsPerLineWidth = Math.floor(maxTextWidth / (CHAR_WIDTH_RATIO * baseFontSize));
-  const linesHeight = Math.floor(maxTextHeight / (baseFontSize * 1.3));
-  
-  if (text.length <= charsPerLineWidth && linesHeight >= 1) {
-    return { lines: [text], fontSize: baseFontSize };
-  }
-  
-  if (linesHeight >= 2) {
-    const spaceIndex = text.indexOf(' ');
-    let splitIndex: number;
-    
-    if (spaceIndex > 0 && spaceIndex < text.length / 2) {
-      splitIndex = spaceIndex;
-    } else if (spaceIndex > text.length / 2) {
-      splitIndex = spaceIndex;
-    } else {
-      splitIndex = Math.floor(text.length / 2);
-    }
-    
-    const line1 = text.slice(0, splitIndex).trim();
-    const line2 = text.slice(splitIndex).trim();
-    
-    if (line1 && line2) {
-      const line1Len = Math.max(line1.length, line2.length);
-      const newFontSize = Math.max(MIN_FONT_SIZE, Math.floor(baseFontSize * charsPerLineWidth / line1Len));
-      return { lines: [line1, line2], fontSize: newFontSize };
-    }
-  }
-  
-  const scale = charsPerLineWidth / text.length;
-  return { lines: [text], fontSize: Math.max(MIN_FONT_SIZE, Math.floor(baseFontSize * scale)) };
-};
-
-const getLegendPosition = (position: string, width: number, height: number) => {
-  const positions: Record<string, { x: number; y: number }> = {
-    top: { x: width / 2, y: height * 0.3 },
-    topLeft: { x: width * 0.15, y: height * 0.3 },
-    topRight: { x: width * 0.85, y: height * 0.3 },
-    center: { x: width / 2, y: height / 2 },
-    bottom: { x: width / 2, y: height * 0.75 },
-    bottomLeft: { x: width * 0.15, y: height * 0.75 },
-    bottomRight: { x: width * 0.85, y: height * 0.75 },
-    left: { x: width * 0.15, y: height / 2 },
-    right: { x: width * 0.85, y: height / 2 }
-  };
-  return positions[position] || { x: width / 2, y: height / 2 };
 };
 
 export const Canvas: React.FC = () => {
@@ -278,14 +229,17 @@ export const Canvas: React.FC = () => {
     const key = layout.keys.find(k => k.id === keyId);
     if (!key) return;
     
-    const currentText = key.legend.center?.text || '';
-    const newText = prompt('Enter key label:', currentText) || '';
+    const currentText = key.legend.primary || '';
+    const newPrimary = prompt('Enter primary label:', currentText) || '';
+    const currentSecondary = key.legend.secondary || '';
+    const newSecondary = prompt('Enter secondary label (optional):', currentSecondary) || '';
     
-    if (newText !== currentText) {
+    if (newPrimary !== currentText || newSecondary !== currentSecondary) {
       updateKey(keyId, {
         legend: {
           ...key.legend,
-          center: { text: newText, color: '#000' }
+          primary: newPrimary,
+          secondary: newSecondary || undefined
         }
       });
     }

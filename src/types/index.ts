@@ -1,20 +1,10 @@
 export type KeyShape = 'rect' | 'rounded' | 'isoEnter' | 'block' | 'barrel';
 
-export type LegendPosition = 
-  | 'top' 
-  | 'topLeft' 
-  | 'topRight' 
-  | 'center' 
-  | 'bottom' 
-  | 'bottomLeft' 
-  | 'bottomRight'
-  | 'left' 
-  | 'right';
-
 export interface LegendItem {
-  text: string;
-  color: string;
-  fontSize?: number;
+  primary: string;
+  primaryColor?: string;
+  secondary?: string;
+  secondaryColor?: string;
 }
 
 export interface HardwareMetadata {
@@ -44,7 +34,7 @@ export interface Key {
   color: string;
   hardware: HardwareMetadata;
   function: FunctionMetadata;
-  legend: Partial<Record<LegendPosition, LegendItem>>;
+  legend: LegendItem;
 }
 
 export interface KeyGroup {
@@ -101,11 +91,6 @@ export const DEFAULT_UNIT_SIZE = 19.05;
 export const DEFAULT_KEY_COLOR = '#ffffff';
 
 export const KEY_SHAPES: KeyShape[] = ['rect', 'rounded', 'isoEnter', 'block', 'barrel'];
-
-export const LEGEND_POSITIONS: LegendPosition[] = [
-  'top', 'topLeft', 'topRight', 'center', 
-  'bottom', 'bottomLeft', 'bottomRight', 'left', 'right'
-];
 
 export { KEYBOARD_PRESETS, loadPreset } from './presets';
 export type { KeyboardPreset, ParsedKeyboard } from './presets';

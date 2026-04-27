@@ -107,7 +107,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       color: DEFAULT_KEY_COLOR,
       hardware: {},
       function: {},
-      legend: {}
+      legend: { primary: '', primaryColor: '#000' }
     };
     
     set({
