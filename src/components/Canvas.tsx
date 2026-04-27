@@ -63,11 +63,16 @@ const KeyElement: React.FC<KeyElementProps> = ({
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
       <rect width={width} height={height} fill={keyData.color} rx="2" stroke="#000" strokeWidth="1" />
       
-      {Object.entries(keyData.legend).map(([position, legend]) => legend && (
-        <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={legend.fontSize || 12} textAnchor="middle" dominantBaseline="middle" {...getLegendPosition(position, width, height)}>
-          {legend.text}
-        </text>
-      ))}
+      {Object.entries(keyData.legend).map(([position, legend]) => legend ? (
+          (() => {
+            const fontSize = getAutoFontSize(legend.text, width, height, legend.fontSize);
+            return (
+              <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={fontSize} textAnchor="middle" dominantBaseline="middle" {...getLegendPosition(position, width, height)}>
+                {legend.text}
+              </text>
+            );
+          })()
+        ) : null)}
       
       {isSelected && (
         <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={1} rx="2" />
@@ -89,6 +94,25 @@ const getLegendPosition = (position: string, width: number, height: number) => {
     right: { x: width * 0.8, y: height / 2 }
   };
   return positions[position] || { x: width / 2, y: height / 2 };
+};
+
+const MIN_FONT_SIZE = 6;
+const MAX_FONT_SIZE = 12;
+const CHAR_WIDTH_RATIO = 0.6;
+
+const getAutoFontSize = (text: string, width: number, height: number, baseFontSize: number = MAX_FONT_SIZE): number => {
+  const fontSize = Math.min(baseFontSize, baseFontSize > 0 ? baseFontSize : MAX_FONT_SIZE);
+  const maxTextWidth = width * 0.8;
+  const maxTextHeight = height * 0.6;
+  
+  const widthBased = Math.floor(maxTextWidth / (CHAR_WIDTH_RATIO * fontSize));
+  const heightBased = Math.floor(maxTextHeight / (fontSize * 1.2));
+  const charLimit = Math.min(widthBased, heightBased);
+  
+  if (text.length <= charLimit) return fontSize;
+  
+  const scale = charLimit / text.length;
+  return Math.max(MIN_FONT_SIZE, Math.floor(fontSize * scale));
 };
 
 export const Canvas: React.FC = () => {
