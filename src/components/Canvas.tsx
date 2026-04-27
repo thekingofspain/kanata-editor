@@ -65,10 +65,14 @@ const KeyElement: React.FC<KeyElementProps> = ({
       
       {Object.entries(keyData.legend).map(([position, legend]) => legend ? (
           (() => {
-            const fontSize = getAutoFontSize(legend.text, width, height, legend.fontSize);
+            const pos = getLegendPosition(position, width, height);
+            const { lines, fontSize } = splitTextForFit(legend.text, width, height, legend.fontSize || MAX_FONT_SIZE);
+            const lineHeight = fontSize * 1.3;
             return (
-              <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={fontSize} textAnchor="middle" dominantBaseline="middle" {...getLegendPosition(position, width, height)}>
-                {legend.text}
+              <text key={position} className={`legend legend-${position}`} fill={legend.color || '#000'} fontSize={fontSize} textAnchor="middle" dominantBaseline="central" x={pos.x} y={pos.y}>
+                {lines.map((line, i) => (
+                  <tspan key={i} x={pos.x} dy={i === 0 ? 0 : lineHeight}>{line}</tspan>
+                ))}
               </text>
             );
           })()
@@ -81,38 +85,60 @@ const KeyElement: React.FC<KeyElementProps> = ({
   );
 };
 
-const getLegendPosition = (position: string, width: number, height: number) => {
-  const positions: Record<string, { x: number; y: number }> = {
-    top: { x: width / 2, y: height * 0.25 },
-    topLeft: { x: width * 0.2, y: height * 0.25 },
-    topRight: { x: width * 0.8, y: height * 0.25 },
-    center: { x: width / 2, y: height / 2 },
-    bottom: { x: width / 2, y: height * 0.75 },
-    bottomLeft: { x: width * 0.2, y: height * 0.75 },
-    bottomRight: { x: width * 0.8, y: height * 0.75 },
-    left: { x: width * 0.2, y: height / 2 },
-    right: { x: width * 0.8, y: height / 2 }
-  };
-  return positions[position] || { x: width / 2, y: height / 2 };
-};
-
 const MIN_FONT_SIZE = 6;
 const MAX_FONT_SIZE = 12;
 const CHAR_WIDTH_RATIO = 0.6;
 
-const getAutoFontSize = (text: string, width: number, height: number, baseFontSize: number = MAX_FONT_SIZE): number => {
-  const fontSize = Math.min(baseFontSize, baseFontSize > 0 ? baseFontSize : MAX_FONT_SIZE);
-  const maxTextWidth = width * 0.8;
-  const maxTextHeight = height * 0.6;
+const splitTextForFit = (text: string, maxWidth: number, maxHeight: number, baseFontSize: number): { lines: string[]; fontSize: number } => {
+  const maxTextWidth = maxWidth * 0.85;
+  const maxTextHeight = maxHeight * 0.7;
   
-  const widthBased = Math.floor(maxTextWidth / (CHAR_WIDTH_RATIO * fontSize));
-  const heightBased = Math.floor(maxTextHeight / (fontSize * 1.2));
-  const charLimit = Math.min(widthBased, heightBased);
+  const charsPerLineWidth = Math.floor(maxTextWidth / (CHAR_WIDTH_RATIO * baseFontSize));
+  const linesHeight = Math.floor(maxTextHeight / (baseFontSize * 1.3));
   
-  if (text.length <= charLimit) return fontSize;
+  if (text.length <= charsPerLineWidth && linesHeight >= 1) {
+    return { lines: [text], fontSize: baseFontSize };
+  }
   
-  const scale = charLimit / text.length;
-  return Math.max(MIN_FONT_SIZE, Math.floor(fontSize * scale));
+  if (linesHeight >= 2) {
+    const spaceIndex = text.indexOf(' ');
+    let splitIndex: number;
+    
+    if (spaceIndex > 0 && spaceIndex < text.length / 2) {
+      splitIndex = spaceIndex;
+    } else if (spaceIndex > text.length / 2) {
+      splitIndex = spaceIndex;
+    } else {
+      splitIndex = Math.floor(text.length / 2);
+    }
+    
+    const line1 = text.slice(0, splitIndex).trim();
+    const line2 = text.slice(splitIndex).trim();
+    
+    if (line1 && line2) {
+      const line1Len = Math.max(line1.length, line2.length);
+      const newFontSize = Math.max(MIN_FONT_SIZE, Math.floor(baseFontSize * charsPerLineWidth / line1Len));
+      return { lines: [line1, line2], fontSize: newFontSize };
+    }
+  }
+  
+  const scale = charsPerLineWidth / text.length;
+  return { lines: [text], fontSize: Math.max(MIN_FONT_SIZE, Math.floor(baseFontSize * scale)) };
+};
+
+const getLegendPosition = (position: string, width: number, height: number) => {
+  const positions: Record<string, { x: number; y: number }> = {
+    top: { x: width / 2, y: height * 0.3 },
+    topLeft: { x: width * 0.15, y: height * 0.3 },
+    topRight: { x: width * 0.85, y: height * 0.3 },
+    center: { x: width / 2, y: height / 2 },
+    bottom: { x: width / 2, y: height * 0.75 },
+    bottomLeft: { x: width * 0.15, y: height * 0.75 },
+    bottomRight: { x: width * 0.85, y: height * 0.75 },
+    left: { x: width * 0.15, y: height / 2 },
+    right: { x: width * 0.85, y: height / 2 }
+  };
+  return positions[position] || { x: width / 2, y: height / 2 };
 };
 
 export const Canvas: React.FC = () => {
