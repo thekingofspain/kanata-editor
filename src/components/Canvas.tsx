@@ -236,6 +236,8 @@ export const Canvas: React.FC = () => {
           e.preventDefault(); 
           if (e.ctrlKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height < 8) updateKey(id, { height: Math.min(8, key.height + 0.5) }); }); 
+          } else if (e.altKey) {
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 15 }); }); 
           } else {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - nudge }); }); 
           }
@@ -244,6 +246,8 @@ export const Canvas: React.FC = () => {
           e.preventDefault(); 
           if (e.ctrlKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height > 0.25) updateKey(id, { height: Math.max(0.25, key.height - 0.5) }); }); 
+          } else if (e.altKey) {
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 15 }); }); 
           } else {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + nudge }); }); 
           }
@@ -252,6 +256,8 @@ export const Canvas: React.FC = () => {
           e.preventDefault(); 
           if (e.ctrlKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width > 0.25) updateKey(id, { width: Math.max(0.25, key.width - 0.5) }); }); 
+          } else if (e.altKey) {
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 1 }); }); 
           } else {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - nudge }); }); 
           }
@@ -260,6 +266,8 @@ export const Canvas: React.FC = () => {
           e.preventDefault(); 
           if (e.ctrlKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width < 8) updateKey(id, { width: Math.min(8, key.width + 0.5) }); }); 
+          } else if (e.altKey) {
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 1 }); }); 
           } else {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + nudge }); }); 
           }
