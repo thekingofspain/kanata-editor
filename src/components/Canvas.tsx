@@ -230,42 +230,38 @@ export const Canvas: React.FC = () => {
       if (e.key === 'Escape') clearSelection();
       
       if (selection.keys.size > 0) {
-        const step = e.shiftKey ? 1 : 0.25;
+        const nudge = e.shiftKey ? 0.25 : 1;
         
         if (e.key === 'ArrowUp') { 
           e.preventDefault(); 
           if (e.ctrlKey) {
-            // Ctrl+Up = increase height
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height < 8) updateKey(id, { height: Math.min(8, key.height + 0.5) }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - step }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - nudge }); }); 
           }
         }
         if (e.key === 'ArrowDown') { 
           e.preventDefault(); 
           if (e.ctrlKey) {
-            // Ctrl+Down = decrease height
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height > 0.25) updateKey(id, { height: Math.max(0.25, key.height - 0.5) }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + step }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + nudge }); }); 
           }
         }
         if (e.key === 'ArrowLeft') { 
           e.preventDefault(); 
           if (e.ctrlKey) {
-            // Ctrl+Left = decrease width
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width > 0.25) updateKey(id, { width: Math.max(0.25, key.width - 0.5) }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - step }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - nudge }); }); 
           }
         }
         if (e.key === 'ArrowRight') { 
           e.preventDefault(); 
           if (e.ctrlKey) {
-            // Ctrl+Right = increase width
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width < 8) updateKey(id, { width: Math.min(8, key.width + 0.5) }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + step }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + nudge }); }); 
           }
         }
       }
