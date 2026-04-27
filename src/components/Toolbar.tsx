@@ -230,6 +230,23 @@ const handleAddKey = () => {
             <option key={size} value={size}>{size}U</option>
           ))}
         </select>
+        
+        {/* Rotation input */}
+        {selection.keys.size > 0 && (
+          <input
+            type="number"
+            step="15"
+            style={{ width: '60px', padding: '4px 8px' }}
+            value={selection.keys.size > 0 ? [...selection.keys][0] ? layout.keys.find(k => k.id === [...selection.keys][0])?.rotation || 0 : 0 : 0}
+            onChange={(e) => {
+              const rotation = parseFloat(e.target.value) || 0;
+              selection.keys.forEach(id => {
+                useEditorStore.getState().updateKey(id, { rotation });
+              });
+            }}
+            title="Rotation angle (Alt+Arrow to adjust)"
+          />
+        )}
       </div>
 
       {/* Layout info */}
