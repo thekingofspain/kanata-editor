@@ -178,7 +178,7 @@ export const Canvas: React.FC = () => {
   const [selectionBox, setSelectionBox] = useState<{ start: { x: number; y: number }; end: { x: number; y: number } } | null>(null);
   const [isCloning, setIsCloning] = useState(false);
   
-  const { layout, canvas, grid, selection, updateKey, selectKey, toggleKeySelection, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection } = useEditorStore();
+  const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection } = useEditorStore();
   const { pan, zoom, lastMousePos } = canvas;
   
   useEffect(() => {
@@ -318,13 +318,16 @@ export const Canvas: React.FC = () => {
   }, [zoom, pan, setCanvasZoom, setCanvasPan]);
   
   const handleKeySelect = (keyId: string, e: React.MouseEvent) => {
-    if (e.shiftKey && selection.lastSelected) {
-      const startIndex = layout.keys.findIndex(k => k.id === selection.lastSelected);
-      const endIndex = layout.keys.findIndex(k => k.id === keyId);
-      const rangeIds = layout.keys.slice(Math.min(startIndex, endIndex), Math.max(startIndex, endIndex) + 1).map(k => k.id);
-      selectKeys([...selection.keys, ...rangeIds]);
-    } else if (e.ctrlKey || e.metaKey) {
-      toggleKeySelection(keyId);
+    e.stopPropagation();
+    if (e.shiftKey) {
+      const isSelected = selection.keys.has(keyId);
+      if (isSelected) {
+        const newKeys = new Set(selection.keys);
+        newKeys.delete(keyId);
+        selectKeys([...newKeys]);
+      } else {
+        selectKeys([...selection.keys, keyId]);
+      }
     } else {
       selectKey(keyId);
     }
@@ -353,9 +356,8 @@ export const Canvas: React.FC = () => {
   const handleDragStart = (keyId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!selection.keys.has(keyId)) selectKey(keyId);
+    if (!selection.keys.has(keyId) && !e.shiftKey) selectKey(keyId);
     
-    // Start clone mode if Ctrl is held and key is already selected
     if (e.ctrlKey && selection.keys.has(keyId)) {
       setIsCloning(true);
       setDragStart({ x: e.clientX, y: e.clientY });
@@ -436,6 +438,7 @@ export const Canvas: React.FC = () => {
   }, [handleMouseMove, handleMouseUp]);
   
   const handleCanvasClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (e.target === svgRef.current || (e.target as Element).closest('#grid-layer')) {
       const pos = screenToCanvas(e.clientX, e.clientY);
       if (e.shiftKey) {

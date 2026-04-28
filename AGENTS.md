@@ -54,6 +54,15 @@ This keyboard navigation approach is reliable and persists across sessions. Avoi
 | Ctrl+A | Select all keys |
 | Escape | Deselect all |
 
+### Mouse Selection
+
+| Action | Behavior |
+|--------|----------|
+| Click | Select single key |
+| Shift+Click | Toggle key in/out of selection |
+| Drag rectangle | Select multiple keys |
+| Click empty canvas | Deselect all |
+
 ## Legend Rendering
 
 Keycap legends use standard typography:
