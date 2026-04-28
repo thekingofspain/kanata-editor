@@ -177,6 +177,7 @@ export const Canvas: React.FC = () => {
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [selectionBox, setSelectionBox] = useState<{ start: { x: number; y: number }; end: { x: number; y: number } } | null>(null);
   const [isCloning, setIsCloning] = useState(false);
+  const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
   const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection } = useEditorStore();
   const { pan, zoom, lastMousePos } = canvas;
@@ -196,12 +197,20 @@ export const Canvas: React.FC = () => {
   }, [setCanvasSize]);
   
   const screenToCanvas = useCallback((screenX: number, screenY: number) => {
-    if (!svgRef.current) return { x: 0, y: 0 };
-    const rect = svgRef.current.getBoundingClientRect();
-    const x = (screenX - rect.left - pan.x) / (BASE_SCALE * zoom);
-    const y = (screenY - rect.top - pan.y) / (BASE_SCALE * zoom);
+    const rect = svgRef.current?.getBoundingClientRect();
+    const containerRect = containerRef.current?.getBoundingClientRect();
+    if (!rect || !containerRect) return { x: 0, y: 0 };
+    const x = (screenX - containerRect.left - pan.x) / (BASE_SCALE * zoom);
+    const y = (screenY - containerRect.top - pan.y) / (BASE_SCALE * zoom);
     return { x, y };
   }, [pan, zoom]);
+
+  useEffect(() => {
+    if (lastScreenPos) {
+      const pos = screenToCanvas(lastScreenPos.x, lastScreenPos.y);
+      setLastMousePos(pos);
+    }
+  }, [pan, lastScreenPos, screenToCanvas, setLastMousePos]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -402,12 +411,15 @@ export const Canvas: React.FC = () => {
     } else if (isPanning) {
       setCanvasPan({ x: pan.x + (e.clientX - panStart.x), y: pan.y + (e.clientY - panStart.y) });
       setPanStart({ x: e.clientX, y: e.clientY });
+      const pos = screenToCanvas(e.clientX, e.clientY);
+      setLastMousePos(pos);
     } else if (selectionBox) {
       const start = screenToCanvas(e.clientX, e.clientY);
       setSelectionBox(prev => prev ? { ...prev, end: start } : prev);
     } else {
       const pos = screenToCanvas(e.clientX, e.clientY);
       setLastMousePos(pos);
+      setLastScreenPos({ x: e.clientX, y: e.clientY });
     }
   }, [isDragging, dragKeyId, dragStart, selection.keys, layout.keys, zoom, grid.snapEnabled, updateKey, isPanning, panStart, pan, setCanvasPan, selectionBox, screenToCanvas, setLastMousePos]);
   
