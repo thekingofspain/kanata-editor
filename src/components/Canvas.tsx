@@ -456,7 +456,6 @@ export const Canvas: React.FC = () => {
       setIsPanning(true);
       setPanStart({ x: e.clientX, y: e.clientY });
     } else if (e.button === 0 && e.ctrlKey && selection.keys.size > 0 && !isOnKey) {
-      // Ctrl + drag = duplicate and drag (Visio behavior)
       e.preventDefault();
       e.stopPropagation();
       duplicateSelection();
@@ -464,8 +463,8 @@ export const Canvas: React.FC = () => {
       setDragKeyId(newKeys[0] || null);
       setDragStart({ x: e.clientX, y: e.clientY });
       setIsDragging(true);
-    } else if (e.button === 0 && isOnCanvas && !selectionBox && !isOnKey) {
-      // Start selection box drag on empty canvas
+    } else if (e.button === 0 && isOnCanvas && !isOnKey) {
+      e.preventDefault();
       const pos = screenToCanvas(e.clientX, e.clientY);
       setSelectionBox({ start: pos, end: pos });
     }
