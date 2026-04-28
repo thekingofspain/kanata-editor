@@ -11,10 +11,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Current Phase** | Phase 2 — Planning |
-| **Current Plan** | 02-01 (Complete) |
-| **Status** | ✓ Complete |
-| **Progress** | Phase 2 of 5 (40%) |
+| **Current Phase** | Phase 3 — Editor Core (In Progress) |
+| **Current Plan** | 03-01 (In Progress) |
+| **Status** | In Progress |
+| **Progress** | Phase 3 of 5 (60%) |
 
 ---
 
@@ -23,7 +23,8 @@
 | Phase | Plans | Duration | Tasks | Files |
 |-------|-------|----------|-------|-------|
 | Phase 1 | 1/1 | — | — | Product Brief |
-| Phase 2 | 1/? | In Progress | — | PRD |
+| Phase 2 | 1/1 | Complete | — | PRD |
+| Phase 3 | 1/? | In Progress | — | Canvas, Toolbar, Store |
 
 ---
 
@@ -65,7 +66,11 @@ None currently.
 - [x] Phase 2: Create .planning/ROADMAP.md
 - [x] Phase 2: Create .planning/REQUIREMENTS.md
 - [x] Phase 2: Create docs/prd-kanata-editor-2026-04-25.md
-- [ ] Phase 3: Plan editor core implementation
+- [x] Phase 3: Implement canvas with base-1 coordinate system
+- [x] Phase 3: Implement key selection (click, Shift+click, drag rectangle)
+- [x] Phase 3: Implement pan (arrow keys, mouse, wheel)
+- [x] Phase 3: Implement zoom (fit, +/-, keys)
+- [ ] Phase 3: Plan remaining editor features
 - [ ] Phase 4: Plan export pipeline
 - [ ] Phase 5: Plan polish and testing
 
@@ -132,6 +137,28 @@ None currently.
 - Phase 5: Polish & Testing (deferred items)
 - UI framework deferred to Phase 3
 - 71 total v1 requirements documented and mapped
+
+---
+
+### Phase 3: Editor Core — In Progress
+
+**Output:** Canvas implementation, toolbar, store
+
+**Artifacts:**
+- Canvas.tsx — SVG-based canvas with base-1 coordinate system
+- Toolbar.tsx — Zoom controls, add/delete keys, keyboard shortcuts
+- store/index.ts — State management for layout, selection, canvas
+- index.css — Global styles extracted from inline code
+
+**Implemented Features:**
+- Base-1 coordinate system (1U = 1 key width) with SVG transform for zoom/pan
+- Key selection: click, Shift+click (toggle), drag rectangle
+- Pan: arrow keys, mouse drag, mouse wheel
+- Zoom: fit button, +/- keys, 0 to reset, mouse wheel
+- Key movement with dimension-proportional nudging
+- Mouse position display in U units
+
+**Status:** Core canvas implemented, more features in progress
 
 ---
 

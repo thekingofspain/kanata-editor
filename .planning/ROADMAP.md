@@ -15,9 +15,9 @@
 
 ## Phases
 
-- [ ] **Phase 1: Analysis** — Market research, user personas, competitive analysis, product brief
+- [x] **Phase 1: Analysis** — Market research, user personas, competitive analysis, product brief
 - [x] **Phase 2: Planning** — PRD with requirements, UX specification, technical architecture
-- [ ] **Phase 3: Editor Core** — Canvas, key management, positioning, resize, rotation, mirror, group, properties, layout management
+- [~] **Phase 3: Editor Core** — Canvas, key management, positioning, resize, rotation, mirror, group, properties, layout management
 - [ ] **Phase 4: Export & Persistence** — SVG/PNG/JSON/kanata/QMK export, save/load, LocalStorage persistence
 - [ ] **Phase 5: Polish & Testing** — Performance optimization, accessibility, unit tests, edge cases
 
@@ -93,7 +93,7 @@
 
 **Plans:** TBD
 
-**Status:** Not started
+**Status:** In Progress (Core canvas implemented)
 
 ---
 
@@ -150,7 +150,7 @@
 |-------|------|-------|--------|-----------|
 | 1 | Analysis | 1/1 | ✓ Complete | 2026-04-25 |
 | 2 | Planning | 1/1 | ✓ Complete | 2026-04-25 |
-| 3 | Editor Core | 0/? | Not started | — |
+| 3 | Editor Core | 1/? | In Progress | — |
 | 4 | Export & Persistence | 0/? | Not started | — |
 | 5 | Polish & Testing | 0/? | Not started | — |
 
