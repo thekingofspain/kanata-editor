@@ -511,7 +511,7 @@ export const Canvas: React.FC = () => {
             ))}
           </g>
           {selectionBox && (
-            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x)} y={Math.min(selectionBox.start.y, selectionBox.end.y)} width={Math.abs(selectionBox.end.x - selectionBox.start.x)} height={Math.abs(selectionBox.end.y - selectionBox.start.y)} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / (BASE_SCALE * zoom)} strokeDasharray={`${4 / (BASE_SCALE * zoom)},${2 / (BASE_SCALE * zoom)}`} rx="4" />
+            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x)} y={Math.min(selectionBox.start.y, selectionBox.end.y)} width={Math.abs(selectionBox.end.x - selectionBox.start.x)} height={Math.abs(selectionBox.end.y - selectionBox.start.y)} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / (BASE_SCALE * zoom)} strokeDasharray={`${4 / (BASE_SCALE * zoom)},${2 / (BASE_SCALE * zoom)}`} />
           )}
         </g>
       </svg>
