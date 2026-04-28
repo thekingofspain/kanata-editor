@@ -402,7 +402,7 @@ export const Canvas: React.FC = () => {
       setPanStart({ x: e.clientX, y: e.clientY });
     } else if (selectionBox) {
       const start = screenToCanvas(e.clientX, e.clientY);
-      setSelectionBox(prev => prev ? { ...prev, end: start } : null);
+      setSelectionBox(prev => prev ? { ...prev, end: start } : prev);
     } else {
       const pos = screenToCanvas(e.clientX, e.clientY);
       setLastMousePos(pos);
@@ -413,18 +413,26 @@ export const Canvas: React.FC = () => {
     if (isDragging) { setIsDragging(false); setDragKeyId(null); }
     if (isPanning) setIsPanning(false);
     if (selectionBox) {
-      const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
-      const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
-      const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
-      const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
-      // Select only keys fully within the selection rectangle
-      const selectedIds = layout.keys.filter(k => 
-        k.x >= minX && k.x + k.width <= maxX && k.y >= minY && k.y + k.height <= maxY
-      ).map(k => k.id);
-      if (selectedIds.length > 0) selectKeys(selectedIds);
+      const width = Math.abs(selectionBox.end.x - selectionBox.start.x);
+      const height = Math.abs(selectionBox.end.y - selectionBox.start.y);
+      
+      // If box is too small (just a click), treat as deselect
+      if (width < 0.1 && height < 0.1) {
+        clearSelection();
+      } else {
+        const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
+        const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
+        const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
+        const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
+        // Select only keys fully within the selection rectangle
+        const selectedIds = layout.keys.filter(k => 
+          k.x >= minX && k.x + k.width <= maxX && k.y >= minY && k.y + k.height <= maxY
+        ).map(k => k.id);
+        if (selectedIds.length > 0) selectKeys(selectedIds);
+      }
       setSelectionBox(null);
     }
-  }, [isDragging, isPanning, selectionBox, layout.keys, selectKeys]);
+  }, [isDragging, isPanning, selectionBox, layout.keys, selectKeys, clearSelection]);
   
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
