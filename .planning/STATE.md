@@ -158,6 +158,9 @@ None currently.
 - Key movement with dimension-proportional nudging
 - Mouse position display in U units
 
+**GSD Structure:**
+- `.planning/phases/03-editor-core/CONTEXT.md` created
+
 **Status:** Core canvas implemented, more features in progress
 
 ---
