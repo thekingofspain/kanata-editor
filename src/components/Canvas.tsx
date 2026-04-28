@@ -218,6 +218,25 @@ export const Canvas: React.FC = () => {
       
       if (e.key === 'Escape') clearSelection();
       
+      // Tab / Shift+Tab for selection navigation
+      if (e.key === 'Tab' && layout.keys.length > 0) {
+        e.preventDefault();
+        const selectedIds = [...selection.keys];
+        if (selectedIds.length === 0) {
+          selectKey(layout.keys[0].id);
+        } else {
+          const lastSelected = selection.lastSelected;
+          const currentIndex = lastSelected ? layout.keys.findIndex(k => k.id === lastSelected) : -1;
+          let nextIndex: number;
+          if (e.shiftKey) {
+            nextIndex = currentIndex <= 0 ? layout.keys.length - 1 : currentIndex - 1;
+          } else {
+            nextIndex = currentIndex >= layout.keys.length - 1 ? 0 : currentIndex + 1;
+          }
+          selectKey(layout.keys[nextIndex].id);
+        }
+      }
+      
       // Pan with arrow keys when nothing is selected
       if (selection.keys.size === 0) {
         const panSpeed = 50 * zoom;
@@ -275,7 +294,7 @@ export const Canvas: React.FC = () => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, layout.keys, removeKeys, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom]);
+  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom]);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {
@@ -425,11 +444,15 @@ export const Canvas: React.FC = () => {
   };
   
   const handleMouseDown = (e: React.MouseEvent) => {
+    const target = e.target as Element;
+    const isOnKey = target.closest('.key') !== null;
+    const isOnCanvas = e.target === svgRef.current || target.closest('#grid-layer') !== null;
+    
     if (e.button === 1 || (e.button === 0 && e.altKey)) {
       e.preventDefault();
       setIsPanning(true);
       setPanStart({ x: e.clientX, y: e.clientY });
-    } else if (e.button === 0 && e.ctrlKey && selection.keys.size > 0) {
+    } else if (e.button === 0 && e.ctrlKey && selection.keys.size > 0 && !isOnKey) {
       // Ctrl + drag = duplicate and drag (Visio behavior)
       e.preventDefault();
       e.stopPropagation();
@@ -438,6 +461,10 @@ export const Canvas: React.FC = () => {
       setDragKeyId(newKeys[0] || null);
       setDragStart({ x: e.clientX, y: e.clientY });
       setIsDragging(true);
+    } else if (e.button === 0 && isOnCanvas && !selectionBox && !isOnKey) {
+      // Start selection box drag on empty canvas
+      const pos = screenToCanvas(e.clientX, e.clientY);
+      setSelectionBox({ start: pos, end: pos });
     }
   };
   
