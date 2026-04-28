@@ -41,6 +41,14 @@ This keyboard navigation approach is reliable and persists across sessions. Avoi
 | - | Zoom out |
 | 0 | Reset zoom to 100% |
 
+### Zoom Controls
+
+| Control | Action |
+|---------|-------|
+| Mouse wheel | Zoom in/out (Ctrl+wheel) or pan (wheel) |
+| Fit button | Fit entire keyboard to viewport |
+| Zoom indicator | Shows current zoom level |
+
 ### Key Editing (when keys are selected)
 
 | Shortcut | Action |

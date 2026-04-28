@@ -1,6 +1,8 @@
 import { useEditorStore } from '../store';
-import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset } from '../types';
+import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset, DEFAULT_UNIT_SIZE } from '../types';
 import { useState } from 'react';
+
+const BASE_SCALE = DEFAULT_UNIT_SIZE;
 
 export const Toolbar: React.FC = () => {
   const [currentKeyWidth, setCurrentKeyWidth] = useState(1);
@@ -116,15 +118,15 @@ const handleAddKey = () => {
     const contentWidth = bounds.maxX - bounds.minX;
     const contentHeight = bounds.maxY - bounds.minY;
     
-    const scaleX = (rect.width - padding * 2) / contentWidth;
-    const scaleY = (rect.height - padding * 2) / contentHeight;
+    const scaleX = (rect.width - padding * 2) / (contentWidth * BASE_SCALE);
+    const scaleY = (rect.height - padding * 2) / (contentHeight * BASE_SCALE);
     const newZoom = Math.min(scaleX, scaleY, 2);
     
     const centerX = (bounds.minX + bounds.maxX) / 2;
     const centerY = (bounds.minY + bounds.maxY) / 2;
     
-    const panX = rect.width / 2 - centerX * newZoom;
-    const panY = rect.height / 2 - centerY * newZoom;
+    const panX = rect.width / 2 - centerX * BASE_SCALE * newZoom;
+    const panY = rect.height / 2 - centerY * BASE_SCALE * newZoom;
     
     setCanvasZoom(newZoom);
     useEditorStore.getState().setCanvasPan({ x: panX, y: panY });
