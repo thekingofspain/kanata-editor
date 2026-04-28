@@ -31,7 +31,18 @@ This keyboard navigation approach is reliable and persists across sessions. Avoi
 
 ## Keyboard Shortcuts
 
-When keys are selected in the editor:
+### Canvas Navigation (no selection)
+
+| Shortcut | Action |
+|---------|-------|
+| Arrow keys | Pan canvas |
+| Space + Arrow keys | Pan canvas (alternative) |
+| Home | Center view / reset pan and zoom |
+| + / = | Zoom in |
+| - | Zoom out |
+| 0 | Reset zoom to 100% |
+
+### Key Editing (when keys are selected)
 
 | Shortcut | Action |
 |---------|-------|

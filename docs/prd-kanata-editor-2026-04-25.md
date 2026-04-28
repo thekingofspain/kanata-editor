@@ -699,6 +699,37 @@ Right Panel (collapsible):
 
 ### 6.4 Keyboard Shortcuts
 
+#### Canvas Navigation (no selection)
+
+| Shortcut | Action |
+|----------|--------|
+| Arrow keys | Pan canvas |
+| Space + Arrow keys | Pan canvas (alternative) |
+| Home | Center view / reset pan and zoom |
+| + / = | Zoom in |
+| - | Zoom out |
+| 0 | Reset zoom to 100% |
+
+#### Key Editing (when keys are selected)
+
+| Shortcut | Action |
+|----------|--------|
+| Arrow keys | Move selected (0.25U) |
+| Shift+Arrow | Move selected (1U) |
+| Ctrl+Arrow | Resize key (width/height) |
+| Alt+Up/Down | Rotate by 15° |
+| Alt+Left/Right | Rotate by 1° |
+| Delete / Backspace | Delete selected |
+| Ctrl+A | Select all |
+| Ctrl+M | Mirror selected |
+| Ctrl+G | Group selected |
+| Ctrl+Shift+G | Ungroup selected |
+| Escape | Deselect all |
+| Tab | Select next key |
+| Shift+Tab | Select previous key |
+
+#### File Operations
+
 | Shortcut | Action |
 |----------|--------|
 | Ctrl+Z | Undo |
@@ -706,22 +737,9 @@ Right Panel (collapsible):
 | Ctrl+C | Copy selected |
 | Ctrl+V | Paste |
 | Ctrl+X | Cut selected |
-| Delete / Backspace | Delete selected |
-| Ctrl+A | Select all |
-| Ctrl+M | Mirror selected |
-| Ctrl+G | Group selected |
-| Ctrl+Shift+G | Ungroup selected |
 | Ctrl+S | Save to file |
 | Ctrl+O | Open from file |
 | Ctrl+E | Export menu |
-| + / = | Zoom in |
-| - | Zoom out |
-| 0 | Reset zoom to 100% |
-| Arrow keys | Move selected (0.25U) |
-| Shift+Arrow | Move selected (1U) |
-| Escape | Deselect all |
-| Tab | Select next key |
-| Shift+Tab | Select previous key |
 
 ### 6.5 Export Workflow
 
