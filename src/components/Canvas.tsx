@@ -522,7 +522,7 @@ export const Canvas: React.FC = () => {
       </div>
       {lastMousePos && (
         <div className="mouse-position" style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontFamily: 'monospace' }}>
-          {lastMousePos.x.toFixed(3)}, {lastMousePos.y.toFixed(3)}
+          {lastMousePos.x.toFixed(2)}U, {lastMousePos.y.toFixed(2)}U
         </div>
       )}
     </div>
