@@ -228,7 +228,7 @@ export const Canvas: React.FC = () => {
       }
       
       if (selection.keys.size > 0) {
-        const nudge = e.shiftKey ? 0.25 : 1;
+        const shiftNudge = e.shiftKey ? 0.25 : 1;
         
         if (e.key === 'ArrowUp') { 
           e.preventDefault(); 
@@ -237,7 +237,7 @@ export const Canvas: React.FC = () => {
           } else if (e.altKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 15 }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - nudge }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - (key.height * shiftNudge) }); }); 
           }
         }
         if (e.key === 'ArrowDown') { 
@@ -247,7 +247,7 @@ export const Canvas: React.FC = () => {
           } else if (e.altKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 15 }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + nudge }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + (key.height * shiftNudge) }); }); 
           }
         }
         if (e.key === 'ArrowLeft') { 
@@ -257,7 +257,7 @@ export const Canvas: React.FC = () => {
           } else if (e.altKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 1 }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - nudge }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - (key.width * shiftNudge) }); }); 
           }
         }
         if (e.key === 'ArrowRight') { 
@@ -267,7 +267,7 @@ export const Canvas: React.FC = () => {
           } else if (e.altKey) {
             [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 1 }); }); 
           } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + nudge }); }); 
+            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + (key.width * shiftNudge) }); }); 
           }
         }
       }
