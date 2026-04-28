@@ -145,15 +145,15 @@ const KeyElement: React.FC<KeyElementProps> = ({
       {legend.primary && (
         hasSecondary ? (
           <>
-            <text x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY} style={{ userSelect: 'none' }}>
+            <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
               {legend.primary}
             </text>
-            <text x={width / 2} y={secondaryY} fill={legend.secondaryColor || '#000'} fontSize={secondaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_SECONDARY} style={{ userSelect: 'none' }}>
+            <text className="key-legend" x={width / 2} y={secondaryY} fill={legend.secondaryColor || '#000'} fontSize={secondaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_SECONDARY}>
               {legend.secondary}
             </text>
           </>
         ) : (
-          <text x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY} style={{ userSelect: 'none' }}>
+          <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
             {legend.primary}
           </text>
         )
