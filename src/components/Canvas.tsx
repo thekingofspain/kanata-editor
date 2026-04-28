@@ -413,28 +413,18 @@ export const Canvas: React.FC = () => {
     if (isDragging) { setIsDragging(false); setDragKeyId(null); }
     if (isPanning) setIsPanning(false);
     if (selectionBox) {
-      const width = Math.abs(selectionBox.end.x - selectionBox.start.x);
-      const height = Math.abs(selectionBox.end.y - selectionBox.start.y);
-      
-      // If box is too small (just a click), treat as deselect
-      if (width < 0.1 && height < 0.1) {
-        clearSelection();
-      } else {
-        const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
-        const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
-        const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
-        const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
-        
-        // Select keys that intersect with the selection rectangle
-        const selectedIds = layout.keys.filter(k => 
-          k.x < maxX && k.x + k.width > minX && k.y < maxY && k.y + k.height > minY
-        ).map(k => k.id);
-        
-        if (selectedIds.length > 0) selectKeys(selectedIds);
-      }
+      const minX = Math.min(selectionBox.start.x, selectionBox.end.x);
+      const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
+      const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
+      const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
+      // Rectangle intersection: key intersects with selection box
+      const selectedIds = layout.keys.filter(k => 
+        k.x < maxX && k.x + k.width > minX && k.y < maxY && k.y + k.height > minY
+      ).map(k => k.id);
+      if (selectedIds.length > 0) selectKeys(selectedIds);
       setSelectionBox(null);
     }
-  }, [isDragging, isPanning, selectionBox, layout.keys, selectKeys, clearSelection]);
+  }, [isDragging, isPanning, selectionBox, layout.keys, selectKeys]);
   
   useEffect(() => {
     window.addEventListener('mousemove', handleMouseMove);
