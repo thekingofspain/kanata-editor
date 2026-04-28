@@ -69,8 +69,8 @@ function parseKeyLabel(cell: string): { primary: string; secondary?: string } {
   if (!cell.trim()) return { primary: '' };
   const parts = cell.split('\n');
   return { 
-    primary: parts.length > 1 ? parts[1] : parts[0] || '',
-    secondary: parts.length > 1 ? parts[0] : undefined
+    primary: parts[0] || '',
+    secondary: parts.length > 1 && parts[1] ? parts[1] : undefined
   };
 }
 
