@@ -139,7 +139,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
   const secondaryY = hasSecondary ? getVerticalPosition(true) * height : height * 0.3;
   
   return (
-    <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
+    <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)}>
       <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke="#000" strokeWidth={1 / BASE_SCALE} />
       
       {legend.primary && (
@@ -497,8 +497,8 @@ export const Canvas: React.FC = () => {
   }
   
   return (
-    <div ref={containerRef} className="canvas-container" style={{ width: '100%', height: '100%', overflow: 'hidden', background: '#f5f5f5' }}>
-      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} onWheel={handleWheel} onClick={handleCanvasClick} onMouseDown={handleMouseDown} style={{ cursor: isPanning ? 'grabbing' : 'default' }}>
+    <div ref={containerRef} className="canvas-container">
+      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} onWheel={handleWheel} onClick={handleCanvasClick} onMouseDown={handleMouseDown} className={isPanning ? 'panning' : ''}>
         <KeyShapes />
         <g transform={`translate(${pan.x}, ${pan.y}) scale(${BASE_SCALE * zoom})`}>
           <g id="grid-layer">{gridLines}</g>
@@ -517,11 +517,11 @@ export const Canvas: React.FC = () => {
           )}
         </g>
       </svg>
-      <div className="zoom-indicator" style={{ position: 'absolute', bottom: '10px', right: '10px', background: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px' }}>
+      <div className="zoom-indicator">
         {Math.round(zoom * 100)}%
       </div>
       {lastMousePos && (
-        <div className="mouse-position" style={{ position: 'absolute', bottom: '10px', left: '10px', background: 'rgba(255,255,255,0.9)', padding: '4px 8px', borderRadius: '4px', fontSize: '12px', fontFamily: 'monospace' }}>
+        <div className="mouse-position">
           {lastMousePos.x.toFixed(2)}U, {lastMousePos.y.toFixed(2)}U
         </div>
       )}
