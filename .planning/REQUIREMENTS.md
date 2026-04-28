@@ -209,6 +209,46 @@
 
 ---
 
+---
+
+## Technical Implementation Notes
+
+### Coordinate System (v2.0+)
+
+The canvas uses a **base-1 coordinate system** where:
+- **1 unit = 1U** (one keyboard key width = 19.05mm)
+- All key positions, dimensions, and sizes are stored in U units (e.g., width: 1.5 means 1.5U)
+- Font sizes and stroke widths are also in U units
+
+#### SVG Transform Architecture
+
+Pan and zoom are handled via SVG transform on a group element, not in calculations:
+
+```svg
+<g transform="translate(panX, panY) scale(baseScale * zoom)">
+  <!-- keys render here in base-1 units -->
+</g>
+```
+
+Where:
+- `baseScale = 19.05` (converts U units to pixels for display)
+- `zoom` = current zoom level (1 = 100%)
+- `panX, panY` = current pan offset
+
+#### Screen-to-Canvas Conversion
+
+To convert screen coordinates (pixels) to canvas coordinates (U units):
+```
+canvasX = (screenX - panX) / (baseScale * zoom)
+canvasY = (screenY - panY) / (baseScale * zoom)
+```
+
+#### Store Configuration
+
+The store's `unitSize` is set to 1 (representing 1U), not 19.05. This ensures all key positions and dimensions are stored in U units.
+
+---
+
 ## Traceability
 
 | Requirement | Phase | Status |

@@ -6,7 +6,6 @@ import {
   GridConfig, 
   SelectionState,
   KeyGroup,
-  DEFAULT_UNIT_SIZE,
   DEFAULT_KEY_COLOR
 } from '../types';
 
@@ -67,7 +66,7 @@ const createEmptyLayout = (): KeyboardLayout => ({
   author: '',
   createdAt: new Date().toISOString(),
   modifiedAt: new Date().toISOString(),
-  unitSize: DEFAULT_UNIT_SIZE,
+  unitSize: 1,
   keys: [],
   groups: []
 });

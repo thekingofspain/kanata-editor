@@ -898,6 +898,39 @@ interface QMKExport {
 
 ## 8. Technical Architecture (High-Level)
 
+### 8.1.1 Canvas Coordinate System (v2.0+)
+
+The canvas uses a **base-1 coordinate system** where all internal values are in U units:
+
+- **1 unit = 1U** (one keyboard key width = 19.05mm standard)
+- All key positions (x, y), dimensions (width, height), and sizes are stored as U units
+- Font sizes and stroke widths are normalized to U units
+
+**SVG Transform Architecture:**
+
+Pan and zoom are applied via SVG transform on a group element, not embedded in calculations:
+
+```svg
+<g transform="translate(panX, panY) scale(19.05 * zoom)">
+  <!-- keys render here in base-1 U units -->
+</g>
+```
+
+This approach:
+- Simplifies all key position/dimension calculations (no unitSize multiplication)
+- Ensures consistent scaling for all elements (keys, grid, text, strokes)
+- Makes zoom/pan performant via native SVG transforms
+
+**Screen-to-Canvas Conversion:**
+```
+canvasX = (screenX - panX) / (19.05 * zoom)
+canvasY = (screenY - panY) / (19.05 * zoom)
+```
+
+**Store Configuration:**
+- `unitSize` in store = 1 (representing 1U)
+- Key positions stored as raw U values (e.g., x: 3.5 means 3.5U from origin)
+
 ### 8.1 Technology Stack (Deferred to Implementation Phase)
 
 The following decisions are **deferred** to the implementation phase (Phase 3):

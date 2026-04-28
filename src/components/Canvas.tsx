@@ -1,25 +1,17 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import { useEditorStore } from '../store';
-import { DEFAULT_UNIT_SIZE, STANDARD_KEY_SIZES, Key } from '../types';
+import { Key, DEFAULT_UNIT_SIZE } from '../types';
+
+const BASE_SCALE = DEFAULT_UNIT_SIZE;
 
 const KeyShapes: React.FC = () => {
-  const unitSize = DEFAULT_UNIT_SIZE;
   return (
     <defs>
-      {STANDARD_KEY_SIZES.map(size => (
-        <rect 
-          key={`key-${size}U`} 
-          id={`key-${size}U`} 
-          width={size * unitSize} 
-          height={unitSize}
-          rx="1"
-        />
-      ))}
       <rect id="key-shape-rect" width="100%" height="100%" rx="0" />
       <rect id="key-shape-rounded" width="100%" height="100%" rx="2" />
-      <path id="key-shape-isoEnter" d="M0,0 h19.05 v9.525 h4.7625 v9.525 h-4.7625 v9.525 h-9.525 v-9.525 h-4.7625 v-9.525 h4.7625 v-9.525 Z" />
+      <path id="key-shape-isoEnter" d="M0,0 h1 v0.5 h0.25 v0.5 h-0.25 v0.5 h-0.5 v-0.5 h-0.25 v-0.5 h0.25 v-0.5 Z" />
       <rect id="key-shape-block" width="100%" height="100%" rx="0" stroke="#999" strokeWidth="0.5" />
-      <path id="key-shape-barrel" d="M0,4 a4,4 0 0 1 4,-4 h11.05 a4,4 0 0 1 4,4 v11.05 a4,4 0 0 1 -4,4 h-11.05 a4,4 0 0 1 -4,-4 z" />
+      <path id="key-shape-barrel" d="M0,0.21 a0.21,0.21 0 0 1 0.21,-0.21 h0.58 a0.21,0.21 0 0 1 0.21,0.21 v0.58 a0.21,0.21 0 0 1 -0.21,0.21 h-0.58 a0.21,0.21 0 0 1 -0.21,-0.21 z" />
       <rect id="selection-outline" width="100%" height="100%" fill="none" stroke="#0066ff" strokeWidth="2" strokeDasharray="4,2" transform="translate(-2, -2)" />
       <g id="rotation-handle">
         <line x1="0" y1="0" x2="0" y2="-20" stroke="#0066ff" strokeWidth="2" />
@@ -35,15 +27,14 @@ const KeyShapes: React.FC = () => {
 interface KeyElementProps {
   keyData: Key;
   isSelected: boolean;
-  unitSize: number;
   onSelect: (id: string, e: React.MouseEvent) => void;
   onDragStart: (id: string, e: React.MouseEvent) => void;
   onDoubleClick: (id: string) => void;
 }
 
-const KEY_GAP = 0.08;
-const STROKE_WIDTH = 1;
-const SECONDARY_FONT_SIZE = 5;
+const KEY_GAP = 0.08 / BASE_SCALE;
+const STROKE_WIDTH = 1 / BASE_SCALE;
+const SECONDARY_FONT_SIZE = 0.26;
 const KEY_FONT_PRIMARY = '"Barlow Condensed", sans-serif';
 const KEY_FONT_SECONDARY = '"Nunito Sans", sans-serif';
 
@@ -106,7 +97,7 @@ function getScaledFontSize(char: string, keyHeight: number, isPrimary: boolean):
   
   const scaleFactor = isPrimary ? 0.80 : 1.0;
   const len = char.length;
-  const minSize = isPrimary ? 5 : 4;
+  const minSize = isPrimary ? 0.26 : 0.21;
   
   if (len <= 1) {
     return Math.max(minSize, targetHeight * 0.85 * weightAdjust * scaleFactor);
@@ -124,17 +115,16 @@ function getVerticalPosition(isSecondary: boolean): number {
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
   isSelected,
-  unitSize,
   onSelect,
   onDragStart,
   onDoubleClick
 }) => {
-  const width = keyData.width * unitSize - KEY_GAP - STROKE_WIDTH;
-  const height = keyData.height * unitSize - KEY_GAP - STROKE_WIDTH;
+  const width = keyData.width - KEY_GAP - STROKE_WIDTH;
+  const height = keyData.height - KEY_GAP - STROKE_WIDTH;
   const centerX = width / 2;
   const centerY = height / 2;
   
-  const transform = `translate(${keyData.x * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}, ${keyData.y * unitSize + KEY_GAP / 2 + STROKE_WIDTH / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
+  const transform = `translate(${keyData.x + KEY_GAP / 2 + STROKE_WIDTH / 2}, ${keyData.y + KEY_GAP / 2 + STROKE_WIDTH / 2}) rotate(${keyData.rotation}, ${centerX}, ${centerY})`;
   
   const { legend } = keyData;
   const hasSecondary = !!legend.secondary;
@@ -150,7 +140,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
   
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)} style={{ cursor: 'move' }}>
-      <rect width={width} height={height} fill={keyData.color} rx="2" stroke="#000" strokeWidth="1" />
+      <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke="#000" strokeWidth={1 / BASE_SCALE} />
       
       {legend.primary && (
         hasSecondary ? (
@@ -170,7 +160,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
       )}
       
       {isSelected && (
-        <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={1} rx="2" />
+        <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={1 / BASE_SCALE} rx={2 / BASE_SCALE} />
       )}
     </g>
   );
@@ -190,7 +180,6 @@ export const Canvas: React.FC = () => {
   
   const { layout, canvas, grid, selection, updateKey, selectKey, toggleKeySelection, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection } = useEditorStore();
   const { pan, zoom, lastMousePos } = canvas;
-  const unitSize = layout.unitSize || DEFAULT_UNIT_SIZE;
   
   useEffect(() => {
     const updateDimensions = () => {
@@ -209,10 +198,10 @@ export const Canvas: React.FC = () => {
   const screenToCanvas = useCallback((screenX: number, screenY: number) => {
     if (!svgRef.current) return { x: 0, y: 0 };
     const rect = svgRef.current.getBoundingClientRect();
-    const x = (screenX - rect.left - pan.x) / zoom / unitSize;
-    const y = (screenY - rect.top - pan.y) / zoom / unitSize;
+    const x = (screenX - rect.left - pan.x) / (BASE_SCALE * zoom);
+    const y = (screenY - rect.top - pan.y) / (BASE_SCALE * zoom);
     return { x, y };
-  }, [pan, zoom, unitSize]);
+  }, [pan, zoom]);
   
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -365,8 +354,8 @@ export const Canvas: React.FC = () => {
       // Select only the new cloned keys
       newSelection.forEach(id => selectKey(id));
     } else if (isDragging && dragKeyId) {
-      const dx = (e.clientX - dragStart.x) / zoom / unitSize;
-      const dy = (e.clientY - dragStart.y) / zoom / unitSize;
+      const dx = (e.clientX - dragStart.x) / (BASE_SCALE * zoom);
+      const dy = (e.clientY - dragStart.y) / (BASE_SCALE * zoom);
       
       const selectedKeyIds = selection.keys.has(dragKeyId) ? [...selection.keys] : [dragKeyId];
       
@@ -390,7 +379,7 @@ export const Canvas: React.FC = () => {
       const pos = screenToCanvas(e.clientX, e.clientY);
       setLastMousePos(pos);
     }
-  }, [isDragging, dragKeyId, dragStart, selection.keys, layout.keys, zoom, unitSize, grid.snapEnabled, updateKey, isPanning, panStart, pan, setCanvasPan, selectionBox, screenToCanvas, setLastMousePos]);
+  }, [isDragging, dragKeyId, dragStart, selection.keys, layout.keys, zoom, grid.snapEnabled, updateKey, isPanning, panStart, pan, setCanvasPan, selectionBox, screenToCanvas, setLastMousePos]);
   
   const handleMouseUp = useCallback(() => {
     if (isDragging) { setIsDragging(false); setDragKeyId(null); }
@@ -444,24 +433,24 @@ export const Canvas: React.FC = () => {
   };
   
   const gridLines: JSX.Element[] = [];
-  const halfWidth = dimensions.width / 2 / zoom / unitSize;
-  const halfHeight = dimensions.height / 2 / zoom / unitSize;
-  const panX = Math.abs(pan.x / zoom / unitSize);
-  const panY = Math.abs(pan.y / zoom / unitSize);
+  const halfWidth = dimensions.width / 2 / (BASE_SCALE * zoom);
+  const halfHeight = dimensions.height / 2 / (BASE_SCALE * zoom);
+  const panX = Math.abs(pan.x / (BASE_SCALE * zoom));
+  const panY = Math.abs(pan.y / (BASE_SCALE * zoom));
   const gridExtent = Math.ceil(Math.max(halfWidth + panX, halfHeight + panY, halfWidth + panY, halfHeight + panX)) + 10;
   
   if (grid.enabled) {
     for (let i = -gridExtent; i <= gridExtent; i++) {
-      const pos = i * unitSize;
+      const pos = i;
       
       if (grid.showMajor && i % 4 === 0) {
-        gridLines.push(<line key={`v-major-${i}`} x1={pos} y1={-gridExtent * unitSize} x2={pos} y2={gridExtent * unitSize} stroke={grid.majorColor} strokeWidth={1 / zoom} opacity={grid.opacity} />);
-        gridLines.push(<line key={`h-major-${i}`} x1={-gridExtent * unitSize} y1={pos} x2={gridExtent * unitSize} y2={pos} stroke={grid.majorColor} strokeWidth={1 / zoom} opacity={grid.opacity} />);
+        gridLines.push(<line key={`v-major-${i}`} x1={pos} y1={-gridExtent} x2={pos} y2={gridExtent} stroke={grid.majorColor} strokeWidth={1 / (BASE_SCALE * zoom)} opacity={grid.opacity} />);
+        gridLines.push(<line key={`h-major-${i}`} x1={-gridExtent} y1={pos} x2={gridExtent} y2={pos} stroke={grid.majorColor} strokeWidth={1 / (BASE_SCALE * zoom)} opacity={grid.opacity} />);
       }
       
       if (grid.showMinor && i % 4 !== 0) {
-        gridLines.push(<line key={`v-minor-${i}`} x1={pos} y1={-gridExtent * unitSize} x2={pos} y2={gridExtent * unitSize} stroke={grid.color} strokeWidth={0.5 / zoom} opacity={grid.opacity * 0.5} />);
-        gridLines.push(<line key={`h-minor-${i}`} x1={-gridExtent * unitSize} y1={pos} x2={gridExtent * unitSize} y2={pos} stroke={grid.color} strokeWidth={0.5 / zoom} opacity={grid.opacity * 0.5} />);
+        gridLines.push(<line key={`v-minor-${i}`} x1={pos} y1={-gridExtent} x2={pos} y2={gridExtent} stroke={grid.color} strokeWidth={0.5 / (BASE_SCALE * zoom)} opacity={grid.opacity * 0.5} />);
+        gridLines.push(<line key={`h-minor-${i}`} x1={-gridExtent} y1={pos} x2={gridExtent} y2={pos} stroke={grid.color} strokeWidth={0.5 / (BASE_SCALE * zoom)} opacity={grid.opacity * 0.5} />);
       }
     }
   }
@@ -470,20 +459,20 @@ export const Canvas: React.FC = () => {
     <div ref={containerRef} className="canvas-container" style={{ width: '100%', height: '100%', overflow: 'hidden', background: '#f5f5f5' }}>
       <svg ref={svgRef} width={dimensions.width} height={dimensions.height} onWheel={handleWheel} onClick={handleCanvasClick} onMouseDown={handleMouseDown} style={{ cursor: isPanning ? 'grabbing' : 'default' }}>
         <KeyShapes />
-        <g transform={`translate(${pan.x}, ${pan.y}) scale(${zoom})`}>
+        <g transform={`translate(${pan.x}, ${pan.y}) scale(${BASE_SCALE * zoom})`}>
           <g id="grid-layer">{gridLines}</g>
           <g id="keys-layer">
             {layout.keys.filter(key => !selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={false} unitSize={unitSize} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              <KeyElement key={key.id} keyData={key} isSelected={false} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
             ))}
           </g>
           <g id="selected-keys-layer">
             {layout.keys.filter(key => selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={true} unitSize={unitSize} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              <KeyElement key={key.id} keyData={key} isSelected={true} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
             ))}
           </g>
           {selectionBox && (
-            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x) * unitSize} y={Math.min(selectionBox.start.y, selectionBox.end.y) * unitSize} width={Math.abs(selectionBox.end.x - selectionBox.start.x) * unitSize} height={Math.abs(selectionBox.end.y - selectionBox.start.y) * unitSize} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / zoom} strokeDasharray={`${4 / zoom},${2 / zoom}`} rx="4" />
+            <rect x={Math.min(selectionBox.start.x, selectionBox.end.x)} y={Math.min(selectionBox.start.y, selectionBox.end.y)} width={Math.abs(selectionBox.end.x - selectionBox.start.x)} height={Math.abs(selectionBox.end.y - selectionBox.start.y)} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / (BASE_SCALE * zoom)} strokeDasharray={`${4 / (BASE_SCALE * zoom)},${2 / (BASE_SCALE * zoom)}`} rx="4" />
           )}
         </g>
       </svg>
