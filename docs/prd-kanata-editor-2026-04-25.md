@@ -703,6 +703,7 @@ Right Panel (collapsible):
 
 | Shortcut | Action |
 |----------|--------|
+| Arrow keys | Pan canvas |
 | Home | Center view / reset pan and zoom |
 | + / = | Zoom in |
 | - | Zoom out |

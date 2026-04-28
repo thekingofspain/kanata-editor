@@ -218,6 +218,15 @@ export const Canvas: React.FC = () => {
       
       if (e.key === 'Escape') clearSelection();
       
+      // Pan with arrow keys when nothing is selected
+      if (selection.keys.size === 0) {
+        const panSpeed = 50 * zoom;
+        if (e.key === 'ArrowUp') { e.preventDefault(); setCanvasPan({ x: pan.x, y: pan.y - panSpeed }); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); setCanvasPan({ x: pan.x, y: pan.y + panSpeed }); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); setCanvasPan({ x: pan.x - panSpeed, y: pan.y }); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); setCanvasPan({ x: pan.x + panSpeed, y: pan.y }); }
+      }
+      
       if (selection.keys.size > 0) {
         const nudge = e.shiftKey ? 0.25 : 1;
         
@@ -266,7 +275,7 @@ export const Canvas: React.FC = () => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, layout.keys, removeKeys, selectKeys, clearSelection, updateKey]);
+  }, [selection.keys, layout.keys, removeKeys, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom]);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {

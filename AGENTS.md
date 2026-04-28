@@ -35,6 +35,7 @@ This keyboard navigation approach is reliable and persists across sessions. Avoi
 
 | Shortcut | Action |
 |---------|-------|
+| Arrow keys | Pan canvas |
 | Home | Center view / reset pan and zoom |
 | + / = | Zoom in |
 | - | Zoom out |
