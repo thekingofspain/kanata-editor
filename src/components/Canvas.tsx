@@ -417,7 +417,10 @@ export const Canvas: React.FC = () => {
       const maxX = Math.max(selectionBox.start.x, selectionBox.end.x);
       const minY = Math.min(selectionBox.start.y, selectionBox.end.y);
       const maxY = Math.max(selectionBox.start.y, selectionBox.end.y);
-      const selectedIds = layout.keys.filter(k => k.x >= minX && k.x + k.width <= maxX && k.y >= minY && k.y + k.height <= maxY).map(k => k.id);
+      // Rectangle intersection: key intersects with selection box
+      const selectedIds = layout.keys.filter(k => 
+        k.x < maxX && k.x + k.width > minX && k.y < maxY && k.y + k.height > minY
+      ).map(k => k.id);
       if (selectedIds.length > 0) selectKeys(selectedIds);
       setSelectionBox(null);
     }
