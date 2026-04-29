@@ -98,7 +98,7 @@ export const PropertiesPanel: React.FC = () => {
             type="text"
             value={primaryLegend}
             onChange={(e) => handleMultiLegendChange('primary', e.target.value)}
-            placeholder={isMulti ? 'Mixed' : 'Primary'}
+            placeholder="Primary"
           />
         </div>
       </div>
@@ -116,7 +116,7 @@ export const PropertiesPanel: React.FC = () => {
             type="text"
             value={secondaryLegend}
             onChange={(e) => handleMultiLegendChange('secondary', e.target.value)}
-            placeholder={isMulti ? 'Mixed' : 'Secondary'}
+            placeholder="Secondary"
           />
         </div>
       </div>
