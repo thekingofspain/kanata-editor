@@ -41,6 +41,19 @@ export const PropertiesPanel: React.FC = () => {
     });
   };
   
+  const handleLegendColorChange = (field: 'primaryColor' | 'secondaryColor', value: string) => {
+    updateKey(selectedKey.id, {
+      legend: {
+        ...selectedKey.legend,
+        [field]: value
+      }
+    });
+  };
+  
+  const handleKeyColorChange = (value: string) => {
+    updateKey(selectedKey.id, { color: value });
+  };
+  
   return (
     <div className="properties-panel">
       <div className="panel-section">
@@ -51,6 +64,15 @@ export const PropertiesPanel: React.FC = () => {
           onChange={(e) => handleLegendChange('primary', e.target.value)}
           placeholder="Enter text"
         />
+        <div className="color-input-row">
+          <input
+            type="color"
+            value={selectedKey.legend.primaryColor || '#000000'}
+            onChange={(e) => handleLegendColorChange('primaryColor', e.target.value)}
+            title="Primary text color"
+          />
+          <span className="color-label">Color</span>
+        </div>
       </div>
       
       <div className="panel-section">
@@ -61,6 +83,28 @@ export const PropertiesPanel: React.FC = () => {
           onChange={(e) => handleLegendChange('secondary', e.target.value)}
           placeholder="Enter text"
         />
+        <div className="color-input-row">
+          <input
+            type="color"
+            value={selectedKey.legend.secondaryColor || '#000000'}
+            onChange={(e) => handleLegendColorChange('secondaryColor', e.target.value)}
+            title="Secondary text color"
+          />
+          <span className="color-label">Color</span>
+        </div>
+      </div>
+      
+      <div className="panel-section">
+        <label>Key Color</label>
+        <div className="color-input-row">
+          <input
+            type="color"
+            value={selectedKey.color || '#ffffff'}
+            onChange={(e) => handleKeyColorChange(e.target.value)}
+            title="Key background color"
+          />
+          <span className="color-label">Fill</span>
+        </div>
       </div>
       
       <div className="panel-section">
