@@ -54,30 +54,45 @@ export const PropertiesPanel: React.FC = () => {
     updateKey(selectedKey.id, { color: value });
   };
   
+  const handlePositionChange = (field: 'x' | 'y', value: string) => {
+    const num = parseFloat(value) || 0;
+    updateKey(selectedKey.id, { [field]: num });
+  };
+  
+  const handleSizeChange = (field: 'width' | 'height', value: string) => {
+    const num = Math.max(0.25, parseFloat(value) || 1);
+    updateKey(selectedKey.id, { [field]: num });
+  };
+  
+  const handleRotationChange = (value: string) => {
+    const num = parseFloat(value) || 0;
+    updateKey(selectedKey.id, { rotation: num % 360 });
+  };
+  
   return (
     <div className="properties-panel">
       <div className="panel-section">
         <label>Legend</label>
         <div className="legend-row">
           <input
-            type="text"
-            value={selectedKey.legend.primary || ''}
-            onChange={(e) => handleLegendChange('primary', e.target.value)}
-            placeholder="Primary"
-          />
-          <input
             type="color"
             value={selectedKey.legend.primaryColor || '#000000'}
             onChange={(e) => handleLegendColorChange('primaryColor', e.target.value)}
             title="Primary color"
           />
-        </div>
-        <div className="legend-row">
           <input
+            className="legend-input"
+            type="text"
+            value={selectedKey.legend.primary || ''}
+            onChange={(e) => handleLegendChange('primary', e.target.value)}
+            placeholder="P"
+          />
+          <input
+            className="legend-input"
             type="text"
             value={selectedKey.legend.secondary || ''}
             onChange={(e) => handleLegendChange('secondary', e.target.value)}
-            placeholder="Secondary"
+            placeholder="S"
           />
           <input
             type="color"
@@ -93,20 +108,58 @@ export const PropertiesPanel: React.FC = () => {
         <div className="legend-row">
           <input
             type="color"
+            className="large-color"
             value={selectedKey.color || '#ffffff'}
             onChange={(e) => handleKeyColorChange(e.target.value)}
             title="Key color"
           />
-          <span>{selectedKey.width.toFixed(1)}U × {selectedKey.height.toFixed(1)}U</span>
-          <span>{selectedKey.rotation}°</span>
+          <input
+            type="number"
+            className="num-input"
+            value={selectedKey.width}
+            onChange={(e) => handleSizeChange('width', e.target.value)}
+            step="0.25"
+            min="0.25"
+          />
+          <span>×</span>
+          <input
+            type="number"
+            className="num-input"
+            value={selectedKey.height}
+            onChange={(e) => handleSizeChange('height', e.target.value)}
+            step="0.25"
+            min="0.25"
+          />
+          <input
+            type="number"
+            className="num-input-small"
+            value={selectedKey.rotation}
+            onChange={(e) => handleRotationChange(e.target.value)}
+            step="15"
+          />
+          <span>°</span>
         </div>
       </div>
       
       <div className="panel-section compact">
         <label>Pos</label>
         <div className="legend-row">
-          <span>X: {selectedKey.x.toFixed(1)}U</span>
-          <span>Y: {selectedKey.y.toFixed(1)}U</span>
+          <span>X:</span>
+          <input
+            type="number"
+            className="num-input"
+            value={selectedKey.x}
+            onChange={(e) => handlePositionChange('x', e.target.value)}
+            step="0.25"
+          />
+          <span>Y:</span>
+          <input
+            type="number"
+            className="num-input"
+            value={selectedKey.y}
+            onChange={(e) => handlePositionChange('y', e.target.value)}
+            step="0.25"
+          />
         </div>
       </div>
     </div>
