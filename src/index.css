@@ -151,6 +151,13 @@ select {
   border: 1px solid #ccc;
   border-radius: 3px;
   font-size: 11px;
+  -moz-appearance: textfield;
+}
+
+.legend-row input[type="number"]::-webkit-outer-spin-button,
+.legend-row input[type="number"]::-webkit-inner-spin-button {
+  opacity: 1;
+  height: 18px;
 }
 
 .legend-row span {
