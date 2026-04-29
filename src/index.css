@@ -91,14 +91,14 @@ select {
 }
 
 .properties-panel {
-  width: 200px;
+  width: 180px;
   background: #fff;
   border-left: 1px solid #e0e0e0;
-  padding: 12px;
-  font-size: 12px;
+  padding: 8px;
+  font-size: 11px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 .panel-section {
@@ -107,16 +107,47 @@ select {
   gap: 4px;
 }
 
+.panel-section.compact {
+  gap: 2px;
+}
+
 .panel-section label {
   font-weight: 600;
   color: #666;
+  font-size: 10px;
+  text-transform: uppercase;
 }
 
-.panel-section input {
-  padding: 6px 8px;
+.panel-section input[type="text"] {
+  padding: 4px 6px;
   border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
+  border-radius: 3px;
+  font-size: 11px;
+  width: 100%;
+}
+
+.legend-row {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.legend-row input[type="text"] {
+  flex: 1;
+}
+
+.legend-row input[type="color"] {
+  width: 24px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.legend-row span {
+  color: #555;
+  font-size: 10px;
 }
 
 .panel-row {
@@ -129,25 +160,4 @@ select {
   color: #888;
   text-align: center;
   padding: 20px 0;
-}
-
-.color-input-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 4px;
-}
-
-.color-input-row input[type="color"] {
-  width: 32px;
-  height: 24px;
-  padding: 0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.color-label {
-  font-size: 11px;
-  color: #888;
 }

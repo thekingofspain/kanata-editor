@@ -57,76 +57,56 @@ export const PropertiesPanel: React.FC = () => {
   return (
     <div className="properties-panel">
       <div className="panel-section">
-        <label>Primary Legend</label>
-        <input
-          type="text"
-          value={selectedKey.legend.primary || ''}
-          onChange={(e) => handleLegendChange('primary', e.target.value)}
-          placeholder="Enter text"
-        />
-        <div className="color-input-row">
+        <label>Legend</label>
+        <div className="legend-row">
+          <input
+            type="text"
+            value={selectedKey.legend.primary || ''}
+            onChange={(e) => handleLegendChange('primary', e.target.value)}
+            placeholder="Primary"
+          />
           <input
             type="color"
             value={selectedKey.legend.primaryColor || '#000000'}
             onChange={(e) => handleLegendColorChange('primaryColor', e.target.value)}
-            title="Primary text color"
+            title="Primary color"
           />
-          <span className="color-label">Color</span>
         </div>
-      </div>
-      
-      <div className="panel-section">
-        <label>Secondary Legend</label>
-        <input
-          type="text"
-          value={selectedKey.legend.secondary || ''}
-          onChange={(e) => handleLegendChange('secondary', e.target.value)}
-          placeholder="Enter text"
-        />
-        <div className="color-input-row">
+        <div className="legend-row">
+          <input
+            type="text"
+            value={selectedKey.legend.secondary || ''}
+            onChange={(e) => handleLegendChange('secondary', e.target.value)}
+            placeholder="Secondary"
+          />
           <input
             type="color"
             value={selectedKey.legend.secondaryColor || '#000000'}
             onChange={(e) => handleLegendColorChange('secondaryColor', e.target.value)}
-            title="Secondary text color"
+            title="Secondary color"
           />
-          <span className="color-label">Color</span>
         </div>
       </div>
       
-      <div className="panel-section">
-        <label>Key Color</label>
-        <div className="color-input-row">
+      <div className="panel-section compact">
+        <label>Key</label>
+        <div className="legend-row">
           <input
             type="color"
             value={selectedKey.color || '#ffffff'}
             onChange={(e) => handleKeyColorChange(e.target.value)}
-            title="Key background color"
+            title="Key color"
           />
-          <span className="color-label">Fill</span>
-        </div>
-      </div>
-      
-      <div className="panel-section">
-        <label>Position</label>
-        <div className="panel-row">
-          <span>X: {selectedKey.x.toFixed(2)}U</span>
-          <span>Y: {selectedKey.y.toFixed(2)}U</span>
-        </div>
-      </div>
-      
-      <div className="panel-section">
-        <label>Size</label>
-        <div className="panel-row">
-          <span>W: {selectedKey.width.toFixed(2)}U</span>
-          <span>H: {selectedKey.height.toFixed(2)}U</span>
-        </div>
-      </div>
-      
-      <div className="panel-section">
-        <label>Rotation</label>
-        <div className="panel-row">
+          <span>{selectedKey.width.toFixed(1)}U × {selectedKey.height.toFixed(1)}U</span>
           <span>{selectedKey.rotation}°</span>
+        </div>
+      </div>
+      
+      <div className="panel-section compact">
+        <label>Pos</label>
+        <div className="legend-row">
+          <span>X: {selectedKey.x.toFixed(1)}U</span>
+          <span>Y: {selectedKey.y.toFixed(1)}U</span>
         </div>
       </div>
     </div>
