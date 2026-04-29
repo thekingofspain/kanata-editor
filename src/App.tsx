@@ -1,6 +1,7 @@
 import { Canvas } from './components/Canvas';
 import { Toolbar } from './components/Toolbar';
 import { PropertiesPanel } from './components/PropertiesPanel';
+import { StatusBar } from './components/StatusBar';
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
         </div>
         <PropertiesPanel />
       </div>
+      <StatusBar />
     </div>
   );
 }

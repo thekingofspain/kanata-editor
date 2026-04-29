@@ -180,7 +180,7 @@ export const Canvas: React.FC = () => {
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
   const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo } = useEditorStore();
-  const { pan, zoom, lastMousePos } = canvas;
+  const { pan, zoom } = canvas;
   
   useEffect(() => {
     const updateDimensions = () => {
@@ -539,14 +539,6 @@ export const Canvas: React.FC = () => {
           )}
         </g>
       </svg>
-      <div className="zoom-indicator">
-        {Math.round(zoom * 100)}%
-      </div>
-      {lastMousePos && (
-        <div className="mouse-position">
-          {lastMousePos.x.toFixed(2)}U, {lastMousePos.y.toFixed(2)}U
-        </div>
-      )}
     </div>
   );
 };

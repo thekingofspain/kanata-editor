@@ -1,15 +1,12 @@
 import { useEditorStore } from '../store';
-import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset, DEFAULT_UNIT_SIZE } from '../types';
+import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset } from '../types';
 import { useState } from 'react';
-
-const BASE_SCALE = DEFAULT_UNIT_SIZE;
 
 export const Toolbar: React.FC = () => {
   const [currentKeyWidth, setCurrentKeyWidth] = useState(1);
   const [selectedPreset, setSelectedPreset] = useState("");
   const {
     layout,
-    canvas,
     grid,
     selection,
     addKey,
@@ -92,46 +89,6 @@ const handleAddKey = () => {
     }
   };
 
-  const handleZoomIn = () => setCanvasZoom(canvas.zoom * 1.25);
-  const handleZoomOut = () => setCanvasZoom(canvas.zoom / 1.25);
-  const handleZoomFit = () => {
-    const keys = layout.keys;
-    if (keys.length === 0) {
-      setCanvasZoom(1);
-      useEditorStore.getState().setCanvasPan({ x: 0, y: 0 });
-      return;
-    }
-    
-    const container = document.querySelector('.canvas-container');
-    if (!container) return;
-    
-    const rect = container.getBoundingClientRect();
-    const padding = 40;
-    
-    const bounds = keys.reduce((acc, k) => ({
-      minX: Math.min(acc.minX, k.x),
-      minY: Math.min(acc.minY, k.y),
-      maxX: Math.max(acc.maxX, k.x + k.width),
-      maxY: Math.max(acc.maxY, k.y + k.height)
-    }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
-    
-    const contentWidth = bounds.maxX - bounds.minX;
-    const contentHeight = bounds.maxY - bounds.minY;
-    
-    const scaleX = (rect.width - padding * 2) / (contentWidth * BASE_SCALE);
-    const scaleY = (rect.height - padding * 2) / (contentHeight * BASE_SCALE);
-    const newZoom = Math.min(scaleX, scaleY, 2);
-    
-    const centerX = (bounds.minX + bounds.maxX) / 2;
-    const centerY = (bounds.minY + bounds.maxY) / 2;
-    
-    const panX = rect.width / 2 - centerX * BASE_SCALE * newZoom;
-    const panY = rect.height / 2 - centerY * BASE_SCALE * newZoom;
-    
-    setCanvasZoom(newZoom);
-    useEditorStore.getState().setCanvasPan({ x: panX, y: panY });
-  };
-
   const handleGroup = () => {
     if (selection.keys.size > 1) {
       groupKeys([...selection.keys], 'New Group');
@@ -200,22 +157,8 @@ const handleAddKey = () => {
         <button onClick={redo} title="Redo (Ctrl+Y)">Redo</button>
       </div>
 
-      {/* View controls */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={handleZoomOut} title="Zoom Out (-)">-</button>
-        <input
-          type="number"
-          value={Math.round(canvas.zoom * 100)}
-          onChange={(e) => {
-            const val = parseInt(e.target.value) || 100;
-            setCanvasZoom(Math.max(25, Math.min(400, val)) / 100);
-          }}
-          title="Zoom percentage"
-          style={{ width: '50px', textAlign: 'center', padding: '4px' }}
-        />
-        <span style={{ padding: '4px 0' }}>%</span>
-        <button onClick={handleZoomIn} title="Zoom In (+)">+</button>
-        <button onClick={handleZoomFit} title="Fit to Window (Ctrl+0)">Fit</button>
+      {/* View controls - right aligned */}
+      <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
         <button onClick={toggleGrid} title="Toggle Grid (G)">
           {grid.enabled ? 'Grid ✓' : 'Grid'}
         </button>
