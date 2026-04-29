@@ -1,0 +1,13 @@
+{
+  "workflow": {
+    "nyquist_validation": true,
+    "auto_advance": false,
+    "text_mode": false
+  },
+  "repository": {
+    "default_branch": "master"
+  },
+  "agents": {
+    "default_model": "claude-sonnet-4-20250514"
+  }
+}
