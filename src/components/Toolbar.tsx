@@ -14,7 +14,6 @@ export const Toolbar: React.FC = () => {
     copySelection,
     paste,
     cutSelection,
-    duplicateSelection,
     mirrorSelection,
     groupKeys,
     undo,
@@ -142,7 +141,7 @@ const handleAddKey = () => {
         <button onClick={copySelection} disabled={selection.keys.size === 0} title="Copy (Ctrl+C)">Copy</button>
         <button onClick={paste} title="Paste (Ctrl+V)">Paste</button>
         <button onClick={cutSelection} disabled={selection.keys.size === 0} title="Cut (Ctrl+X)">Cut</button>
-        <button onClick={duplicateSelection} disabled={selection.keys.size === 0} title="Duplicate (Ctrl+D)">Duplicate</button>
+        
         <button onClick={() => mirrorSelection(false)} disabled={selection.keys.size === 0} title="Mirror (Ctrl+M)">Mirror</button>
       </div>
 
