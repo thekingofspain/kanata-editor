@@ -72,7 +72,7 @@ export const PropertiesPanel: React.FC = () => {
   return (
     <div className="properties-panel">
       <div className="panel-section">
-        <label>Legend</label>
+        <label>Primary</label>
         <div className="legend-row">
           <input
             type="color"
@@ -81,41 +81,37 @@ export const PropertiesPanel: React.FC = () => {
             title="Primary color"
           />
           <input
-            className="legend-input"
             type="text"
             value={selectedKey.legend.primary || ''}
             onChange={(e) => handleLegendChange('primary', e.target.value)}
-            placeholder="P"
+            placeholder="Primary"
           />
-          <input
-            className="legend-input"
-            type="text"
-            value={selectedKey.legend.secondary || ''}
-            onChange={(e) => handleLegendChange('secondary', e.target.value)}
-            placeholder="S"
-          />
+        </div>
+      </div>
+      
+      <div className="panel-section">
+        <label>Secondary</label>
+        <div className="legend-row">
           <input
             type="color"
             value={selectedKey.legend.secondaryColor || '#000000'}
             onChange={(e) => handleLegendColorChange('secondaryColor', e.target.value)}
             title="Secondary color"
           />
+          <input
+            type="text"
+            value={selectedKey.legend.secondary || ''}
+            onChange={(e) => handleLegendChange('secondary', e.target.value)}
+            placeholder="Secondary"
+          />
         </div>
       </div>
       
       <div className="panel-section compact">
-        <label>Key</label>
+        <label>Size</label>
         <div className="legend-row">
           <input
-            type="color"
-            className="large-color"
-            value={selectedKey.color || '#ffffff'}
-            onChange={(e) => handleKeyColorChange(e.target.value)}
-            title="Key color"
-          />
-          <input
             type="number"
-            className="num-input"
             value={selectedKey.width}
             onChange={(e) => handleSizeChange('width', e.target.value)}
             step="0.25"
@@ -124,15 +120,19 @@ export const PropertiesPanel: React.FC = () => {
           <span>×</span>
           <input
             type="number"
-            className="num-input"
             value={selectedKey.height}
             onChange={(e) => handleSizeChange('height', e.target.value)}
             step="0.25"
             min="0.25"
           />
+        </div>
+      </div>
+      
+      <div className="panel-section compact">
+        <label>Rotation</label>
+        <div className="legend-row">
           <input
             type="number"
-            className="num-input-small"
             value={selectedKey.rotation}
             onChange={(e) => handleRotationChange(e.target.value)}
             step="15"
@@ -142,12 +142,11 @@ export const PropertiesPanel: React.FC = () => {
       </div>
       
       <div className="panel-section compact">
-        <label>Pos</label>
+        <label>Position</label>
         <div className="legend-row">
           <span>X:</span>
           <input
             type="number"
-            className="num-input"
             value={selectedKey.x}
             onChange={(e) => handlePositionChange('x', e.target.value)}
             step="0.25"
@@ -155,10 +154,21 @@ export const PropertiesPanel: React.FC = () => {
           <span>Y:</span>
           <input
             type="number"
-            className="num-input"
             value={selectedKey.y}
             onChange={(e) => handlePositionChange('y', e.target.value)}
             step="0.25"
+          />
+        </div>
+      </div>
+      
+      <div className="panel-section">
+        <label>Key Color</label>
+        <div className="legend-row">
+          <input
+            type="color"
+            value={selectedKey.color || '#ffffff'}
+            onChange={(e) => handleKeyColorChange(e.target.value)}
+            title="Key color"
           />
         </div>
       </div>

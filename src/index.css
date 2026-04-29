@@ -128,43 +128,29 @@ select {
 
 .legend-row {
   display: flex;
-  gap: 4px;
+  gap: 6px;
   align-items: center;
 }
 
-.legend-input {
-  width: 40px !important;
-  text-align: center;
+.legend-row input[type="text"] {
+  flex: 1;
 }
 
 .legend-row input[type="color"] {
-  width: 20px;
-  height: 18px;
+  width: 24px;
+  height: 24px;
   padding: 0;
   border: 1px solid #ccc;
   border-radius: 3px;
   cursor: pointer;
 }
 
-.legend-row input[type="color"].large-color {
-  width: 28px;
-  height: 24px;
-}
-
-.legend-row .num-input {
-  width: 45px;
+.legend-row input[type="number"] {
+  width: 50px;
   padding: 3px 4px;
   border: 1px solid #ccc;
   border-radius: 3px;
-  font-size: 10px;
-}
-
-.legend-row .num-input-small {
-  width: 35px;
-  padding: 3px 4px;
-  border: 1px solid #ccc;
-  border-radius: 3px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .legend-row span {
