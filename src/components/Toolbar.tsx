@@ -203,9 +203,17 @@ const handleAddKey = () => {
       {/* View controls */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
         <button onClick={handleZoomOut} title="Zoom Out (-)">-</button>
-        <span style={{ padding: '4px 8px', minWidth: '50px', textAlign: 'center' }}>
-          {Math.round(canvas.zoom * 100)}%
-        </span>
+        <input
+          type="number"
+          value={Math.round(canvas.zoom * 100)}
+          onChange={(e) => {
+            const val = parseInt(e.target.value) || 100;
+            setCanvasZoom(Math.max(25, Math.min(400, val)) / 100);
+          }}
+          title="Zoom percentage"
+          style={{ width: '50px', textAlign: 'center', padding: '4px' }}
+        />
+        <span style={{ padding: '4px 0' }}>%</span>
         <button onClick={handleZoomIn} title="Zoom In (+)">+</button>
         <button onClick={handleZoomFit} title="Fit to Window (Ctrl+0)">Fit</button>
         <button onClick={toggleGrid} title="Toggle Grid (G)">
