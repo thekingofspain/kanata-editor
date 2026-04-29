@@ -179,7 +179,7 @@ export const Canvas: React.FC = () => {
   const [isCloning, setIsCloning] = useState(false);
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
-  const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection } = useEditorStore();
+  const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo } = useEditorStore();
   const { pan, zoom, lastMousePos } = canvas;
   
   useEffect(() => {
@@ -223,6 +223,16 @@ export const Canvas: React.FC = () => {
       if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
         selectKeys(layout.keys.map(k => k.id));
+      }
+      
+      if ((e.key === 'z') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+        e.preventDefault();
+        undo();
+      }
+      
+      if ((e.key === 'y' && (e.ctrlKey || e.metaKey)) || ((e.key === 'z') && (e.ctrlKey || e.metaKey) && e.shiftKey)) {
+        e.preventDefault();
+        redo();
       }
       
       if (e.key === 'Escape') clearSelection();
@@ -303,7 +313,7 @@ export const Canvas: React.FC = () => {
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom]);
+  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom, undo, redo]);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {
