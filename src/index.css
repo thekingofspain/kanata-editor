@@ -89,3 +89,44 @@ select {
   font-size: 12px;
   font-family: monospace;
 }
+
+.properties-panel {
+  width: 200px;
+  background: #fff;
+  border-left: 1px solid #e0e0e0;
+  padding: 12px;
+  font-size: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.panel-section label {
+  font-weight: 600;
+  color: #666;
+}
+
+.panel-section input {
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.panel-row {
+  display: flex;
+  gap: 12px;
+  color: #333;
+}
+
+.panel-empty, .panel-info {
+  color: #888;
+  text-align: center;
+  padding: 20px 0;
+}
