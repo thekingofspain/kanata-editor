@@ -1,12 +1,17 @@
 import { useEditorStore } from '../store';
+import { Key } from '../types';
+
+function getCommonValue<T>(keys: Key[], getter: (k: Key) => T): T | '' {
+  const values = keys.map(getter);
+  const first = values[0];
+  return values.every(v => v === first) ? first : '';
+}
 
 export const PropertiesPanel: React.FC = () => {
   const { selection, layout, updateKey } = useEditorStore();
   
-  const selectedKeys = [...selection.keys];
-  const selectedKey = selectedKeys.length === 1 
-    ? layout.keys.find(k => k.id === selectedKeys[0])
-    : null;
+  const selectedKeyIds = [...selection.keys];
+  const selectedKeys = selectedKeyIds.map(id => layout.keys.find(k => k.id === id)).filter(Boolean) as Key[];
   
   if (selectedKeys.length === 0) {
     return (
@@ -16,75 +21,84 @@ export const PropertiesPanel: React.FC = () => {
     );
   }
   
-  if (selectedKeys.length > 1) {
-    return (
-      <div className="properties-panel">
-        <div className="panel-info">{selectedKeys.length} keys selected</div>
-      </div>
-    );
-  }
+  const isMulti = selectedKeys.length > 1;
   
-  if (!selectedKey) {
-    return (
-      <div className="properties-panel">
-        <div className="panel-empty">Key not found</div>
-      </div>
-    );
-  }
+  const getValue = <T,>(getter: (k: Key) => T): T | '' => {
+    return getCommonValue(selectedKeys, getter);
+  };
   
-  const handleLegendChange = (field: 'primary' | 'secondary', value: string) => {
-    updateKey(selectedKey.id, {
-      legend: {
-        ...selectedKey.legend,
-        [field]: value
+  const updateAll = (update: Partial<Key>) => {
+    selectedKeyIds.forEach(id => updateKey(id, update));
+  };
+  
+  const handleMultiLegendChange = (field: 'primary' | 'secondary', value: string) => {
+    selectedKeyIds.forEach(id => {
+      const key = selectedKeys.find(k => k.id === id);
+      if (key) {
+        updateKey(id, { legend: { ...key.legend, [field]: value } });
       }
     });
   };
   
-  const handleLegendColorChange = (field: 'primaryColor' | 'secondaryColor', value: string) => {
-    updateKey(selectedKey.id, {
-      legend: {
-        ...selectedKey.legend,
-        [field]: value
+  const handleMultiLegendColorChange = (field: 'primaryColor' | 'secondaryColor', value: string) => {
+    selectedKeyIds.forEach(id => {
+      const key = selectedKeys.find(k => k.id === id);
+      if (key) {
+        updateKey(id, { legend: { ...key.legend, [field]: value } });
       }
     });
   };
   
-  const handleKeyColorChange = (value: string) => {
-    updateKey(selectedKey.id, { color: value });
+  const handleMultiKeyColorChange = (value: string) => {
+    updateAll({ color: value });
   };
   
-  const handlePositionChange = (field: 'x' | 'y', value: string) => {
-    const num = parseFloat(value) || 0;
-    updateKey(selectedKey.id, { [field]: num });
-  };
-  
-  const handleSizeChange = (field: 'width' | 'height', value: string) => {
+  const handleMultiSizeChange = (field: 'width' | 'height', value: string) => {
     const num = Math.max(0.25, parseFloat(value) || 1);
-    updateKey(selectedKey.id, { [field]: num });
+    updateAll({ [field]: num });
   };
   
-  const handleRotationChange = (value: string) => {
+  const handleMultiRotationChange = (value: string) => {
     const num = parseFloat(value) || 0;
-    updateKey(selectedKey.id, { rotation: num % 360 });
+    updateAll({ rotation: num % 360 });
   };
+  
+  const handleMultiPositionChange = (field: 'x' | 'y', value: string) => {
+    const num = parseFloat(value) || 0;
+    updateAll({ [field]: num });
+  };
+  
+  const primaryColor = getValue(k => k.legend.primaryColor || '#000000');
+  const primaryLegend = getValue(k => k.legend.primary || '');
+  const secondaryColor = getValue(k => k.legend.secondaryColor || '#000000');
+  const secondaryLegend = getValue(k => k.legend.secondary || '');
+  const keyColor = getValue(k => k.color || '#ffffff');
+  const width = getValue(k => k.width);
+  const height = getValue(k => k.height);
+  const rotation = getValue(k => k.rotation);
+  const x = getValue(k => k.x);
+  const y = getValue(k => k.y);
   
   return (
     <div className="properties-panel">
+      {isMulti && (
+        <div className="panel-info">{selectedKeys.length} keys selected</div>
+      )}
+      
       <div className="panel-section">
         <label>Primary</label>
         <div className="legend-row">
           <input
             type="color"
-            value={selectedKey.legend.primaryColor || '#000000'}
-            onChange={(e) => handleLegendColorChange('primaryColor', e.target.value)}
+            value={typeof primaryColor === 'string' ? primaryColor : '#000000'}
+            onChange={(e) => handleMultiLegendColorChange('primaryColor', e.target.value)}
             title="Primary color"
           />
           <input
             type="text"
-            value={selectedKey.legend.primary || ''}
-            onChange={(e) => handleLegendChange('primary', e.target.value)}
-            placeholder="Primary"
+            value={primaryLegend}
+            onChange={(e) => handleMultiLegendChange('primary', e.target.value)}
+            placeholder={isMulti ? 'Mixed' : 'Primary'}
           />
         </div>
       </div>
@@ -94,15 +108,15 @@ export const PropertiesPanel: React.FC = () => {
         <div className="legend-row">
           <input
             type="color"
-            value={selectedKey.legend.secondaryColor || '#000000'}
-            onChange={(e) => handleLegendColorChange('secondaryColor', e.target.value)}
+            value={typeof secondaryColor === 'string' ? secondaryColor : '#000000'}
+            onChange={(e) => handleMultiLegendColorChange('secondaryColor', e.target.value)}
             title="Secondary color"
           />
           <input
             type="text"
-            value={selectedKey.legend.secondary || ''}
-            onChange={(e) => handleLegendChange('secondary', e.target.value)}
-            placeholder="Secondary"
+            value={secondaryLegend}
+            onChange={(e) => handleMultiLegendChange('secondary', e.target.value)}
+            placeholder={isMulti ? 'Mixed' : 'Secondary'}
           />
         </div>
       </div>
@@ -113,16 +127,16 @@ export const PropertiesPanel: React.FC = () => {
           <span>W:</span>
           <input
             type="number"
-            value={selectedKey.width}
-            onChange={(e) => handleSizeChange('width', e.target.value)}
+            value={width}
+            onChange={(e) => handleMultiSizeChange('width', e.target.value)}
             step="0.25"
             min="0.25"
           />
           <span>H:</span>
           <input
             type="number"
-            value={selectedKey.height}
-            onChange={(e) => handleSizeChange('height', e.target.value)}
+            value={height}
+            onChange={(e) => handleMultiSizeChange('height', e.target.value)}
             step="0.25"
             min="0.25"
           />
@@ -134,8 +148,8 @@ export const PropertiesPanel: React.FC = () => {
         <div className="legend-row">
           <input
             type="number"
-            value={selectedKey.rotation}
-            onChange={(e) => handleRotationChange(e.target.value)}
+            value={rotation}
+            onChange={(e) => handleMultiRotationChange(e.target.value)}
             step="15"
           />
           <span>°</span>
@@ -148,15 +162,15 @@ export const PropertiesPanel: React.FC = () => {
           <span>X:</span>
           <input
             type="number"
-            value={selectedKey.x}
-            onChange={(e) => handlePositionChange('x', e.target.value)}
+            value={x}
+            onChange={(e) => handleMultiPositionChange('x', e.target.value)}
             step="0.25"
           />
           <span>Y:</span>
           <input
             type="number"
-            value={selectedKey.y}
-            onChange={(e) => handlePositionChange('y', e.target.value)}
+            value={y}
+            onChange={(e) => handleMultiPositionChange('y', e.target.value)}
             step="0.25"
           />
         </div>
@@ -167,8 +181,8 @@ export const PropertiesPanel: React.FC = () => {
         <div className="legend-row">
           <input
             type="color"
-            value={selectedKey.color || '#ffffff'}
-            onChange={(e) => handleKeyColorChange(e.target.value)}
+            value={typeof keyColor === 'string' ? keyColor : '#ffffff'}
+            onChange={(e) => handleMultiKeyColorChange(e.target.value)}
             title="Key color"
           />
         </div>
