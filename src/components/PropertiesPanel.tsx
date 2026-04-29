@@ -110,6 +110,7 @@ export const PropertiesPanel: React.FC = () => {
       <div className="panel-section compact">
         <label>Size</label>
         <div className="legend-row">
+          <span>W:</span>
           <input
             type="number"
             value={selectedKey.width}
@@ -117,7 +118,7 @@ export const PropertiesPanel: React.FC = () => {
             step="0.25"
             min="0.25"
           />
-          <span>×</span>
+          <span>H:</span>
           <input
             type="number"
             value={selectedKey.height}
