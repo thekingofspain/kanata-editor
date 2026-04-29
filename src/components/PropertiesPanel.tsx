@@ -78,6 +78,7 @@ export const PropertiesPanel: React.FC = () => {
   const rotation = getValue(k => k.rotation);
   const x = getValue(k => k.x);
   const y = getValue(k => k.y);
+  const mixedColorStyle = { border: '2px dashed #999', background: 'transparent' };
   
   return (
     <div className="properties-panel">
@@ -88,12 +89,16 @@ export const PropertiesPanel: React.FC = () => {
       <div className="panel-section">
         <label>Primary</label>
         <div className="legend-row">
-          <input
-            type="color"
-            value={typeof primaryColor === 'string' ? primaryColor : '#000000'}
-            onChange={(e) => handleMultiLegendColorChange('primaryColor', e.target.value)}
-            title="Primary color"
-          />
+          {isMulti && primaryColor === '' ? (
+            <div className="color-mixed" onClick={() => handleMultiLegendColorChange('primaryColor', '#000000')} style={mixedColorStyle} title="Click to set color" />
+          ) : (
+            <input
+              type="color"
+              value={typeof primaryColor === 'string' ? primaryColor : '#000000'}
+              onChange={(e) => handleMultiLegendColorChange('primaryColor', e.target.value)}
+              title="Primary color"
+            />
+          )}
           <input
             type="text"
             value={primaryLegend}
@@ -106,12 +111,16 @@ export const PropertiesPanel: React.FC = () => {
       <div className="panel-section">
         <label>Secondary</label>
         <div className="legend-row">
-          <input
-            type="color"
-            value={typeof secondaryColor === 'string' ? secondaryColor : '#000000'}
-            onChange={(e) => handleMultiLegendColorChange('secondaryColor', e.target.value)}
-            title="Secondary color"
-          />
+          {isMulti && secondaryColor === '' ? (
+            <div className="color-mixed" onClick={() => handleMultiLegendColorChange('secondaryColor', '#000000')} style={mixedColorStyle} title="Click to set color" />
+          ) : (
+            <input
+              type="color"
+              value={typeof secondaryColor === 'string' ? secondaryColor : '#000000'}
+              onChange={(e) => handleMultiLegendColorChange('secondaryColor', e.target.value)}
+              title="Secondary color"
+            />
+          )}
           <input
             type="text"
             value={secondaryLegend}
@@ -179,12 +188,16 @@ export const PropertiesPanel: React.FC = () => {
       <div className="panel-section">
         <label>Key Color</label>
         <div className="legend-row">
-          <input
-            type="color"
-            value={typeof keyColor === 'string' ? keyColor : '#ffffff'}
-            onChange={(e) => handleMultiKeyColorChange(e.target.value)}
-            title="Key color"
-          />
+          {isMulti && keyColor === '' ? (
+            <div className="color-mixed" onClick={() => handleMultiKeyColorChange('#ffffff')} style={mixedColorStyle} title="Click to set color" />
+          ) : (
+            <input
+              type="color"
+              value={typeof keyColor === 'string' ? keyColor : '#ffffff'}
+              onChange={(e) => handleMultiKeyColorChange(e.target.value)}
+              title="Key color"
+            />
+          )}
         </div>
       </div>
     </div>
