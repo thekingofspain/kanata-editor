@@ -116,6 +116,7 @@ select {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  margin-bottom: 12px;
 }
 
 .panel-section.compact {
