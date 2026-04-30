@@ -278,8 +278,19 @@ const handleAddKey = () => {
 
       {/* View controls - right aligned */}
       <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-        <button onClick={toggleGrid} title="Toggle Grid (G)">
-          {grid.enabled ? 'Grid ✓' : 'Grid'}
+        <button 
+          onClick={toggleGrid} 
+          title="Toggle Grid (G)"
+          style={{
+            background: grid.enabled ? '#e0e0e0' : '#fff',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+            padding: '6px 12px',
+            cursor: 'pointer',
+            fontSize: '12px'
+          }}
+        >
+          Grid
         </button>
       </div>
 

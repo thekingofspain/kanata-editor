@@ -269,6 +269,7 @@ export const PropertiesPanel: React.FC = () => {
                 onChange={(e) => handleMultiSizeChange('width', e.target.value)}
                 step="0.25"
                 min="0.25"
+                style={{ marginRight: '6px' }}
               />
               <span>H:</span>
               <input
@@ -282,15 +283,15 @@ export const PropertiesPanel: React.FC = () => {
           </div>
           
           <div className="panel-section compact">
-            <label>Rotation</label>
+            <label>Angle</label>
             <div className="legend-row">
+              <span>°</span>
               <input
                 type="number"
                 value={rotation}
                 onChange={(e) => handleMultiRotationChange(e.target.value)}
                 step="15"
               />
-              <span>°</span>
             </div>
           </div>
           
@@ -302,14 +303,15 @@ export const PropertiesPanel: React.FC = () => {
                 type="number"
                 value={x}
                 onChange={(e) => handleMultiPositionChange('x', e.target.value)}
-                step="0.25"
+                step="1"
+                style={{ marginRight: '6px' }}
               />
               <span>Y:</span>
               <input
                 type="number"
                 value={y}
                 onChange={(e) => handleMultiPositionChange('y', e.target.value)}
-                step="0.25"
+                step="1"
               />
             </div>
           </div>
