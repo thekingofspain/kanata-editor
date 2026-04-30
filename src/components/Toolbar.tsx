@@ -2,6 +2,93 @@ import { useEditorStore } from '../store';
 import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset } from '../types';
 import { useState } from 'react';
 
+const IconButton: React.FC<{
+  onClick: () => void;
+  disabled?: boolean;
+  title: string;
+  children: React.ReactNode;
+}> = ({ onClick, disabled, title, children }) => (
+  <button
+    onClick={onClick}
+    disabled={disabled}
+    title={title}
+    style={{
+      padding: '6px 8px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      minWidth: '32px',
+      opacity: disabled ? 0.4 : 1
+    }}
+  >
+    {children}
+  </button>
+);
+
+const CopyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="9" y="9" width="13" height="13" rx="2" />
+    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+  </svg>
+);
+
+const PasteIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
+    <rect x="8" y="2" width="8" height="4" rx="1" />
+  </svg>
+);
+
+const CutIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="6" cy="6" r="3" />
+    <circle cx="6" cy="18" r="3" />
+    <line x1="20" y1="4" x2="8.12" y2="15.88" />
+    <line x1="14.47" y1="14.48" x2="20" y2="20" />
+    <line x1="8.12" y1="8.12" x2="12" y2="12" />
+  </svg>
+);
+
+const MirrorIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M12 3v18" />
+    <path d="M8 6l-4 6 4 6" />
+    <path d="M16 6l4 6-4 6" />
+  </svg>
+);
+
+const GroupIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7" />
+    <rect x="14" y="3" width="7" height="7" />
+    <rect x="3" y="14" width="7" height="7" />
+    <rect x="14" y="14" width="7" height="7" />
+  </svg>
+);
+
+const UngroupIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <rect x="3" y="3" width="7" height="7" />
+    <rect x="14" y="3" width="7" height="7" />
+    <rect x="3" y="14" width="7" height="7" />
+    <line x1="10" y1="10" x2="14" y2="14" strokeDasharray="2 2" />
+  </svg>
+);
+
+const UndoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M3 7v6h6" />
+    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.58 2.56L3 13" />
+  </svg>
+);
+
+const RedoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M21 7v6h-6" />
+    <path d="M3 17a9 9 0 019-9 9 9 0 016.58 2.56L21 13" />
+  </svg>
+);
+
 export const Toolbar: React.FC = () => {
   const [currentKeyWidth, setCurrentKeyWidth] = useState(1);
   const [selectedPreset, setSelectedPreset] = useState("");
@@ -16,6 +103,7 @@ export const Toolbar: React.FC = () => {
     cutSelection,
     mirrorSelection,
     groupKeys,
+    ungroupKeys,
     undo,
     redo,
     toggleGrid,
@@ -94,6 +182,22 @@ const handleAddKey = () => {
     }
   };
 
+  const handleUngroup = () => {
+    const selectedKeyIds = [...selection.keys];
+    const selectedKeys = selectedKeyIds
+      .map(id => layout.keys.find(k => k.id === id))
+      .filter((k): k is NonNullable<typeof k> => k !== undefined);
+    const groupIds = selectedKeys
+      .filter(k => (k as any).groupId)
+      .map(k => (k as any).groupId);
+    if (groupIds.length > 0) {
+      ungroupKeys(groupIds[0]);
+    }
+  };
+
+  const hasSelection = selection.keys.size > 0;
+  const hasMultipleSelection = selection.keys.size > 1;
+
   return (
     <div className="toolbar" style={{
       display: 'flex',
@@ -131,29 +235,45 @@ const handleAddKey = () => {
       {/* Key operations */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
         <button onClick={handleAddKey} title="Add Key (N)">+ Key</button>
-        <button onClick={handleDelete} disabled={selection.keys.size === 0} title="Delete (Del)">Delete</button>
+        <button onClick={handleDelete} disabled={!hasSelection} title="Delete (Del)">Delete</button>
         <button onClick={selectAll} title="Select All (Ctrl+A)">Select All</button>
-        <button onClick={clearSelection} title="Deselect (Esc)">Deselect</button>
+        <button onClick={clearSelection} disabled={!hasSelection} title="Deselect (Esc)">Deselect</button>
       </div>
 
-      {/* Copy/Paste */}
+      {/* Copy/Paste/Cut/Mirror - with icons */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={copySelection} disabled={selection.keys.size === 0} title="Copy (Ctrl+C)">Copy</button>
-        <button onClick={paste} title="Paste (Ctrl+V)">Paste</button>
-        <button onClick={cutSelection} disabled={selection.keys.size === 0} title="Cut (Ctrl+X)">Cut</button>
-        
-        <button onClick={() => mirrorSelection(false)} disabled={selection.keys.size === 0} title="Mirror (Ctrl+M)">Mirror</button>
+        <IconButton onClick={copySelection} disabled={!hasSelection} title="Copy (Ctrl+C)">
+          <CopyIcon />
+        </IconButton>
+        <IconButton onClick={paste} title="Paste (Ctrl+V)">
+          <PasteIcon />
+        </IconButton>
+        <IconButton onClick={cutSelection} disabled={!hasSelection} title="Cut (Ctrl+X)">
+          <CutIcon />
+        </IconButton>
+        <IconButton onClick={() => mirrorSelection(false)} disabled={!hasSelection} title="Mirror (Ctrl+M)">
+          <MirrorIcon />
+        </IconButton>
       </div>
 
-      {/* Grouping */}
+      {/* Group/Ungroup in the middle */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={handleGroup} disabled={selection.keys.size <= 1} title="Group (Ctrl+G)">Group</button>
+        <IconButton onClick={handleGroup} disabled={!hasMultipleSelection} title="Group (Ctrl+G)">
+          <GroupIcon />
+        </IconButton>
+        <IconButton onClick={handleUngroup} disabled={!hasSelection} title="Ungroup (Ctrl+Shift+G)">
+          <UngroupIcon />
+        </IconButton>
       </div>
 
       {/* Undo/Redo */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={undo} title="Undo (Ctrl+Z)">Undo</button>
-        <button onClick={redo} title="Redo (Ctrl+Y)">Redo</button>
+        <IconButton onClick={undo} title="Undo (Ctrl+Z)">
+          <UndoIcon />
+        </IconButton>
+        <IconButton onClick={redo} title="Redo (Ctrl+Y)">
+          <RedoIcon />
+        </IconButton>
       </div>
 
       {/* View controls - right aligned */}
