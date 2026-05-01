@@ -62,14 +62,17 @@ const MirrorIcon = () => (
   </svg>
 );
 
-const GroupIcon: React.FC<{ filled?: boolean; disabled?: boolean }> = ({ filled, disabled }) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : (filled ? "#ff8800" : "currentColor")} strokeWidth={filled ? 2.5 : 2} strokeDasharray={filled ? "2 1" : "none"}>
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-    <rect x="14" y="14" width="7" height="7" />
-  </svg>
-);
+const GroupIcon: React.FC<{ filled?: boolean; disabled?: boolean }> = ({ filled, disabled }) => {
+  const isEnabled = !disabled;
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : "#ff8800"} strokeWidth={filled && isEnabled ? 2.5 : 2} strokeDasharray={filled && isEnabled ? "2 1" : "none"}>
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+    </svg>
+  );
+};
 
 const UngroupIcon: React.FC<{ selected?: boolean; disabled?: boolean }> = ({ selected, disabled }) => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : (selected ? "#0066ff" : "currentColor")} strokeWidth={selected ? 2.5 : 2}>
