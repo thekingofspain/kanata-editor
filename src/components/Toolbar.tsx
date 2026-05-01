@@ -5,9 +5,10 @@ import { useState } from 'react';
 const IconButton: React.FC<{
   onClick: () => void;
   disabled?: boolean;
+  pressed?: boolean;
   title: string;
   children: React.ReactNode;
-}> = ({ onClick, disabled, title, children }) => (
+}> = ({ onClick, disabled, pressed, title, children }) => (
   <button
     onClick={onClick}
     disabled={disabled}
@@ -18,7 +19,11 @@ const IconButton: React.FC<{
       alignItems: 'center',
       justifyContent: 'center',
       minWidth: '32px',
-      opacity: disabled ? 0.4 : 1
+      background: pressed ? '#e0e0e0' : '#fff',
+      border: pressed ? '1px solid #888' : '1px solid #ccc',
+      opacity: disabled ? 0.4 : 1,
+      cursor: disabled ? 'not-allowed' : 'pointer',
+      color: disabled ? '#999' : '#000'
     }}
   >
     {children}
@@ -57,8 +62,8 @@ const MirrorIcon = () => (
   </svg>
 );
 
-const GroupIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+const GroupIcon: React.FC<{ filled?: boolean; disabled?: boolean }> = ({ filled, disabled }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : (filled ? "#ff8800" : "currentColor")} strokeWidth={filled ? 2.5 : 2} strokeDasharray={filled ? "2 1" : "none"}>
     <rect x="3" y="3" width="7" height="7" />
     <rect x="14" y="3" width="7" height="7" />
     <rect x="3" y="14" width="7" height="7" />
@@ -66,8 +71,8 @@ const GroupIcon = () => (
   </svg>
 );
 
-const UngroupIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+const UngroupIcon: React.FC<{ selected?: boolean; disabled?: boolean }> = ({ selected, disabled }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : (selected ? "#0066ff" : "currentColor")} strokeWidth={selected ? 2.5 : 2}>
     <rect x="3" y="3" width="7" height="7" />
     <rect x="14" y="3" width="7" height="7" />
     <rect x="3" y="14" width="7" height="7" />
@@ -96,6 +101,8 @@ export const Toolbar: React.FC = () => {
     layout,
     grid,
     selection,
+    history,
+    historyIndex,
     addKey,
     removeKeys,
     copySelection,
@@ -197,6 +204,16 @@ const handleAddKey = () => {
 
   const hasSelection = selection.keys.size > 0;
   const hasMultipleSelection = selection.keys.size > 1;
+  const hasGroupedSelection = hasSelection && [...selection.keys].some(id => {
+    const key = layout.keys.find(k => k.id === id);
+    return key && (key as any).groupId;
+  });
+  const canGroup = hasMultipleSelection && !([...selection.keys].every(id => {
+    const key = layout.keys.find(k => k.id === id);
+    return key && (key as any).groupId;
+  }));
+  const groupButtonDisabled = !canGroup;
+  const ungroupButtonDisabled = !hasGroupedSelection;
 
   return (
     <div className="toolbar" style={{
@@ -258,20 +275,20 @@ const handleAddKey = () => {
 
       {/* Group/Ungroup in the middle */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={handleGroup} disabled={!hasMultipleSelection} title="Group (Ctrl+G)">
-          <GroupIcon />
+        <IconButton onClick={handleGroup} disabled={groupButtonDisabled} title="Group (Ctrl+G)">
+          <GroupIcon filled={hasGroupedSelection} disabled={groupButtonDisabled} />
         </IconButton>
-        <IconButton onClick={handleUngroup} disabled={!hasSelection} title="Ungroup (Ctrl+Shift+G)">
-          <UngroupIcon />
+        <IconButton onClick={handleUngroup} disabled={ungroupButtonDisabled} title="Ungroup (Ctrl+Shift+G)">
+          <UngroupIcon selected={hasGroupedSelection} disabled={ungroupButtonDisabled} />
         </IconButton>
       </div>
 
       {/* Undo/Redo */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={undo} title="Undo (Ctrl+Z)">
+        <IconButton onClick={undo} disabled={historyIndex <= 0} title="Undo (Ctrl+Z)">
           <UndoIcon />
         </IconButton>
-        <IconButton onClick={redo} title="Redo (Ctrl+Y)">
+        <IconButton onClick={redo} disabled={historyIndex >= history.length - 1} title="Redo (Ctrl+Y)">
           <RedoIcon />
         </IconButton>
       </div>

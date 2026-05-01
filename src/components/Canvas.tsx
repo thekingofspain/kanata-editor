@@ -27,6 +27,7 @@ const KeyShapes: React.FC = () => {
 interface KeyElementProps {
   keyData: Key;
   isSelected: boolean;
+  isGrouped: boolean;
   onSelect: (id: string, e: React.MouseEvent) => void;
   onDragStart: (id: string, e: React.MouseEvent) => void;
   onDoubleClick: (id: string) => void;
@@ -115,6 +116,7 @@ function getVerticalPosition(isSecondary: boolean): number {
 const KeyElement: React.FC<KeyElementProps> = ({
   keyData,
   isSelected,
+  isGrouped,
   onSelect,
   onDragStart,
   onDoubleClick
@@ -140,7 +142,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
   
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)}>
-      <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke="#000" strokeWidth={1 / BASE_SCALE} />
+      <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke={isSelected && isGrouped ? "#ff8800" : (isSelected ? "#0066ff" : "#000")} strokeWidth={1 / BASE_SCALE} strokeDasharray={isSelected && isGrouped ? "0.15, 0.08" : "none"} />
       
       {legend.primary && (
         hasSecondary ? (
@@ -160,7 +162,7 @@ const KeyElement: React.FC<KeyElementProps> = ({
       )}
       
       {isSelected && (
-        <rect x={0} y={0} width={width} height={height} fill="none" stroke="#0066ff" strokeWidth={1 / BASE_SCALE} rx={2 / BASE_SCALE} />
+        <rect x={0} y={0} width={width} height={height} fill="none" stroke={isGrouped ? "#ff8800" : "#0066ff"} strokeWidth={1 / BASE_SCALE} strokeDasharray={isGrouped ? "0.15, 0.08" : "none"} rx={2 / BASE_SCALE} />
       )}
     </g>
   );
@@ -338,6 +340,9 @@ export const Canvas: React.FC = () => {
   
   const handleKeySelect = (keyId: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const clickedKey = layout.keys.find(k => k.id === keyId);
+    if (!clickedKey) return;
+    
     if (e.shiftKey) {
       const isSelected = selection.keys.has(keyId);
       if (isSelected) {
@@ -347,6 +352,22 @@ export const Canvas: React.FC = () => {
       } else {
         selectKeys([...selection.keys, keyId]);
       }
+    } else if (clickedKey.groupId) {
+      // Clicking on a key in a group
+      const groupKeyIds = layout.keys.filter(k => k.groupId === clickedKey.groupId).map(k => k.id);
+      const allGroupKeysSelected = groupKeyIds.every(id => selection.keys.has(id));
+      if (allGroupKeysSelected) {
+        // All keys in group already selected - deselect the group
+        const newKeys = new Set(selection.keys);
+        groupKeyIds.forEach(id => newKeys.delete(id));
+        selectKeys([...newKeys]);
+      } else {
+        // Select the whole group
+        selectKeys(groupKeyIds);
+      }
+    } else if (selection.keys.has(keyId)) {
+      // Clicking on an already selected ungrouped key - deselect it
+      clearSelection();
     } else {
       selectKey(keyId);
     }
@@ -375,7 +396,15 @@ export const Canvas: React.FC = () => {
   const handleDragStart = (keyId: string, e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!selection.keys.has(keyId) && !e.shiftKey) selectKey(keyId);
+    if (!selection.keys.has(keyId) && !e.shiftKey) {
+      const clickedKey = layout.keys.find(k => k.id === keyId);
+      if (clickedKey?.groupId) {
+        const groupKeyIds = layout.keys.filter(k => k.groupId === clickedKey.groupId).map(k => k.id);
+        selectKeys(groupKeyIds);
+      } else if (clickedKey) {
+        selectKey(keyId);
+      }
+    }
     
     if (e.ctrlKey && selection.keys.has(keyId)) {
       setIsCloning(true);
@@ -526,12 +555,12 @@ export const Canvas: React.FC = () => {
           <g id="grid-layer">{gridLines}</g>
           <g id="keys-layer">
             {layout.keys.filter(key => !selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={false} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              <KeyElement key={key.id} keyData={key} isSelected={false} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
             ))}
           </g>
           <g id="selected-keys-layer">
             {layout.keys.filter(key => selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={true} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              <KeyElement key={key.id} keyData={key} isSelected={true} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
             ))}
           </g>
           {selectionBox && (
