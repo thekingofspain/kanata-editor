@@ -291,6 +291,7 @@ export const PropertiesPanel: React.FC = () => {
                 value={rotation}
                 onChange={(e) => handleMultiRotationChange(e.target.value)}
                 step="15"
+                style={{ marginLeft: '0px' }}
               />
             </div>
           </div>

@@ -122,9 +122,9 @@ export function loadPreset(preset: KeyboardPreset): ParsedKeyboard {
             function: { keycode: '' },
 legend: {
               primary: parsed.primary,
-              primaryColor: '#000',
+              primaryColor: '#000000',
               secondary: parsed.secondary,
-              secondaryColor: '#000'
+              secondaryColor: '#000000'
             }
           });
         maxX = Math.max(maxX, currentX + keyWidth);

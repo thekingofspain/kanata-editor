@@ -181,7 +181,7 @@ export const Canvas: React.FC = () => {
   const [isCloning, setIsCloning] = useState(false);
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
-  const { layout, canvas, grid, selection, updateKey, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo } = useEditorStore();
+  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo } = useEditorStore();
   const { pan, zoom } = canvas;
   
   useEffect(() => {
@@ -215,7 +215,7 @@ export const Canvas: React.FC = () => {
   }, [pan, lastScreenPos, screenToCanvas, setLastMousePos]);
   
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const handleKeyDown = async (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
       if (e.key === 'Delete' || e.key === 'Backspace') {
@@ -269,53 +269,36 @@ export const Canvas: React.FC = () => {
       
       if (selection.keys.size > 0) {
         const shiftNudge = e.shiftKey ? 0.25 : 1;
+        const currentLayout = useEditorStore.getState().layout;
+        const keyIds = [...selection.keys];
+        const updates = keyIds.map(id => {
+          const key = currentLayout.keys.find(k => k.id === id);
+          if (!key) return null;
+          if (e.key === 'ArrowUp') {
+            return { id, updates: e.ctrlKey ? { height: Math.min(8, key.height + 0.5) } : e.altKey ? { rotation: key.rotation + 15 } : { y: key.y - (key.height * shiftNudge) } };
+          }
+          if (e.key === 'ArrowDown') {
+            return { id, updates: e.ctrlKey ? { height: Math.max(0.25, key.height - 0.5) } : e.altKey ? { rotation: key.rotation - 15 } : { y: key.y + (key.height * shiftNudge) } };
+          }
+          if (e.key === 'ArrowLeft') {
+            return { id, updates: e.ctrlKey ? { width: Math.max(0.25, key.width - 0.5) } : e.altKey ? { rotation: key.rotation - 1 } : { x: key.x - (key.width * shiftNudge) } };
+          }
+          if (e.key === 'ArrowRight') {
+            return { id, updates: e.ctrlKey ? { width: Math.min(8, key.width + 0.5) } : e.altKey ? { rotation: key.rotation + 1 } : { x: key.x + (key.width * shiftNudge) } };
+          }
+          return null;
+        }).filter(Boolean) as { id: string; updates: Partial<Key> }[];
         
-        if (e.key === 'ArrowUp') { 
-          e.preventDefault(); 
-          if (e.ctrlKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height < 8) updateKey(id, { height: Math.min(8, key.height + 0.5) }); }); 
-          } else if (e.altKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 15 }); }); 
-          } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y - (key.height * shiftNudge) }); }); 
-          }
-        }
-        if (e.key === 'ArrowDown') { 
-          e.preventDefault(); 
-          if (e.ctrlKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.height > 0.25) updateKey(id, { height: Math.max(0.25, key.height - 0.5) }); }); 
-          } else if (e.altKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 15 }); }); 
-          } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { y: key.y + (key.height * shiftNudge) }); }); 
-          }
-        }
-        if (e.key === 'ArrowLeft') { 
-          e.preventDefault(); 
-          if (e.ctrlKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width > 0.25) updateKey(id, { width: Math.max(0.25, key.width - 0.5) }); }); 
-          } else if (e.altKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation - 1 }); }); 
-          } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x - (key.width * shiftNudge) }); }); 
-          }
-        }
-        if (e.key === 'ArrowRight') { 
-          e.preventDefault(); 
-          if (e.ctrlKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key && key.width < 8) updateKey(id, { width: Math.min(8, key.width + 0.5) }); }); 
-          } else if (e.altKey) {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { rotation: key.rotation + 1 }); }); 
-          } else {
-            [...selection.keys].forEach(id => { const key = layout.keys.find(k => k.id === id); if (key) updateKey(id, { x: key.x + (key.width * shiftNudge) }); }); 
-          }
+        if (updates.length > 0) {
+          e.preventDefault();
+          updateKeys(updates);
         }
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, setCanvasPan, pan, zoom, undo, redo]);
+  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, updateKeys, setCanvasPan, pan, zoom, undo, redo]);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {
@@ -524,7 +507,7 @@ export const Canvas: React.FC = () => {
     }
   };
   
-  const gridLines: JSX.Element[] = [];
+  const gridLines: React.JSX.Element[] = [];
   const halfWidth = dimensions.width / 2 / (BASE_SCALE * zoom);
   const halfHeight = dimensions.height / 2 / (BASE_SCALE * zoom);
   const panX = Math.abs(pan.x / (BASE_SCALE * zoom));

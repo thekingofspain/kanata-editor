@@ -105,7 +105,7 @@ export const Toolbar: React.FC = () => {
     grid,
     selection,
     history,
-    historyIndex,
+    future,
     addKey,
     removeKeys,
     copySelection,
@@ -120,7 +120,11 @@ export const Toolbar: React.FC = () => {
     setCanvasZoom,
     selectAll,
     clearSelection,
-    loadLayout
+    loadLayout,
+    selectKey,
+    updateKey,
+    newLayout,
+    setLastMousePos
   } = useEditorStore();
   
   const handlePresetChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -156,28 +160,21 @@ export const Toolbar: React.FC = () => {
   };
 
 const handleAddKey = () => {
-    // Always add at center (0, 0) and select the new key
     const selectedKeys = [...selection.keys];
     
     if (selectedKeys.length > 0) {
-      // Add near selected key
       const lastKeyId = selection.lastSelected;
       const lastKey = layout.keys.find(k => k.id === lastKeyId);
       if (lastKey) {
         const newKey = addKey(lastKey.x + lastKey.width, lastKey.y);
-        useEditorStore.getState().selectKey(newKey.id);
+        selectKey(newKey.id);
         return;
       }
     }
     
-    // Use store directly to ensure atomic operation
-    const store = useEditorStore.getState();
-    // Clear mouse position first
-    store.setLastMousePos(null);
-    // Add at center (0, 0) with current key width
-    const newKey = store.addKey(0, 0, currentKeyWidth, 1);
-    // Select the new key
-    store.selectKey(newKey.id);
+    setLastMousePos(null);
+    const newKey = addKey(0, 0, currentKeyWidth, 1);
+    selectKey(newKey.id);
   };
 
   const handleDelete = () => {
@@ -198,10 +195,10 @@ const handleAddKey = () => {
       .map(id => layout.keys.find(k => k.id === id))
       .filter((k): k is NonNullable<typeof k> => k !== undefined);
     const groupIds = selectedKeys
-      .filter(k => (k as any).groupId)
-      .map(k => (k as any).groupId);
+      .filter(k => k.groupId)
+      .map(k => k.groupId);
     if (groupIds.length > 0) {
-      ungroupKeys(groupIds[0]);
+      ungroupKeys(groupIds[0]!);
     }
   };
 
@@ -209,11 +206,11 @@ const handleAddKey = () => {
   const hasMultipleSelection = selection.keys.size > 1;
   const hasGroupedSelection = hasSelection && [...selection.keys].some(id => {
     const key = layout.keys.find(k => k.id === id);
-    return key && (key as any).groupId;
+    return key && key.groupId;
   });
   const canGroup = hasMultipleSelection && !([...selection.keys].every(id => {
     const key = layout.keys.find(k => k.id === id);
-    return key && (key as any).groupId;
+    return key && key.groupId;
   }));
   const groupButtonDisabled = !canGroup;
   const ungroupButtonDisabled = !hasGroupedSelection;
@@ -230,7 +227,7 @@ const handleAddKey = () => {
     }}>
       {/* File operations */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={() => useEditorStore.getState().newLayout()}>New</button>
+        <button onClick={newLayout}>New</button>
         <button onClick={() => {
           const json = JSON.stringify(layout, null, 2);
           const blob = new Blob([json], { type: 'application/json' });
@@ -288,10 +285,10 @@ const handleAddKey = () => {
 
       {/* Undo/Redo */}
       <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={undo} disabled={historyIndex <= 0} title="Undo (Ctrl+Z)">
+        <IconButton onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)">
           <UndoIcon />
         </IconButton>
-        <IconButton onClick={redo} disabled={historyIndex >= history.length - 1} title="Redo (Ctrl+Y)">
+        <IconButton onClick={redo} disabled={future.length === 0} title="Redo (Ctrl+Y)">
           <RedoIcon />
         </IconButton>
       </div>
@@ -322,7 +319,7 @@ const handleAddKey = () => {
             setCurrentKeyWidth(width);
             if (selection.keys.size > 0) {
               selection.keys.forEach(id => {
-                useEditorStore.getState().updateKey(id, { width });
+                updateKey(id, { width });
               });
             }
           }}
@@ -344,7 +341,7 @@ const handleAddKey = () => {
             onChange={(e) => {
               const rotation = parseFloat(e.target.value) || 0;
               selection.keys.forEach(id => {
-                useEditorStore.getState().updateKey(id, { rotation });
+                updateKey(id, { rotation });
               });
             }}
             title="Rotation angle (Alt+Arrow to adjust)"

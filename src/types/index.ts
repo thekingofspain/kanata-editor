@@ -35,6 +35,7 @@ export interface Key {
   hardware: HardwareMetadata;
   function: FunctionMetadata;
   legend: LegendItem;
+  groupId?: string;
 }
 
 export interface KeyGroup {

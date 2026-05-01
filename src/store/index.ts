@@ -18,12 +18,13 @@ interface EditorState {
   selection: SelectionState;
   clipboard: Key[];
   history: KeyboardLayout[];
-  historyIndex: number;
+  future: KeyboardLayout[];
   
   // Actions
   addKey: (x: number, y: number, width?: number, height?: number) => Key;
   removeKeys: (keyIds: string[]) => void;
-  updateKey: (keyId: string, updates: Partial<Key>) => void;
+  updateKey: (keyId: string, updates: Partial<Key>, saveHistory?: boolean) => void;
+  updateKeys: (updates: { id: string; updates: Partial<Key> }[]) => void;
   
   selectKey: (keyId: string, addToSelection?: boolean) => void;
   toggleKeySelection: (keyId: string) => void;
@@ -91,10 +92,11 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   selection: { keys: new Set(), lastSelected: null, anchorKey: null },
   clipboard: [],
   history: [],
-  historyIndex: -1,
+  future: [],
   
   addKey: (x, y, width = 1, height = 1) => {
     const state = get();
+    state.saveToHistory();
     const newKey: Key = {
       id: generateId(),
       x,
@@ -106,7 +108,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       color: DEFAULT_KEY_COLOR,
       hardware: {},
       function: {},
-      legend: { primary: '', primaryColor: '#000' }
+      legend: { primary: '', primaryColor: '#000000' }
     };
     
     set({
@@ -122,6 +124,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   
   removeKeys: (keyIds) => {
     const state = get();
+    state.saveToHistory();
     set({
       layout: {
         ...state.layout,
@@ -136,14 +139,32 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     });
   },
   
-  updateKey: (keyId, updates) => {
+  updateKey: (keyId, updates, saveHistory = true) => {
     const state = get();
+    if (saveHistory) {
+      state.saveToHistory();
+    }
     set({
       layout: {
         ...state.layout,
         keys: state.layout.keys.map(k => 
           k.id === keyId ? { ...k, ...updates } : k
         ),
+        modifiedAt: new Date().toISOString()
+      }
+    });
+  },
+  
+  updateKeys: (updates) => {
+    const state = get();
+    state.saveToHistory();
+    set({
+      layout: {
+        ...state.layout,
+        keys: state.layout.keys.map(k => {
+          const update = updates.find(u => u.id === k.id);
+          return update ? { ...k, ...update.updates } : k;
+        }),
         modifiedAt: new Date().toISOString()
       }
     });
@@ -257,6 +278,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     const state = get();
     if (state.clipboard.length === 0) return;
     
+    state.saveToHistory();
+    
     const newKeys = state.clipboard.map(k => ({
       ...k,
       id: generateId(),
@@ -289,6 +312,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   
   duplicateSelection: () => {
     const state = get();
+    state.saveToHistory();
     const selectedKeys = state.layout.keys.filter(
       k => state.selection.keys.has(k.id)
     );
@@ -322,6 +346,8 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     
     if (selectedKeys.length === 0) return;
     
+    state.saveToHistory();
+    
     const bounds = selectedKeys.reduce((acc, k) => ({
       minX: Math.min(acc.minX, k.x),
       minY: Math.min(acc.minY, k.y),
@@ -354,8 +380,10 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   
   groupKeys: (keyIds, name = 'Group') => {
     const state = get();
+    state.saveToHistory();
+    const groupId = generateId();
     const newGroup: KeyGroup = {
-      id: generateId(),
+      id: groupId,
       name,
       keys: keyIds
     };
@@ -363,6 +391,9 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     set({
       layout: {
         ...state.layout,
+        keys: state.layout.keys.map(k => 
+          keyIds.includes(k.id) ? { ...k, groupId } : k
+        ),
         groups: [...state.layout.groups, newGroup],
         modifiedAt: new Date().toISOString()
       }
@@ -371,9 +402,15 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   
   ungroupKeys: (groupId) => {
     const state = get();
+    state.saveToHistory();
+    const group = state.layout.groups.find(g => g.id === groupId);
+    const keyIds = group ? group.keys : [];
     set({
       layout: {
         ...state.layout,
+        keys: state.layout.keys.map(k => 
+          keyIds.includes(k.id) ? { ...k, groupId: undefined } : k
+        ),
         groups: state.layout.groups.filter(g => g.id !== groupId),
         modifiedAt: new Date().toISOString()
       }
@@ -382,30 +419,36 @@ export const useEditorStore = create<EditorState>((set, get) => ({
   
   undo: () => {
     const state = get();
-    if (state.historyIndex <= 0) return;
+    if (state.history.length === 0) return;
     
-    const newIndex = state.historyIndex - 1;
+    const currentLayout = JSON.parse(JSON.stringify(state.layout));
+    const lastState = state.history[state.history.length - 1];
+    
     set({
-      layout: JSON.parse(JSON.stringify(state.history[newIndex])),
-      historyIndex: newIndex
+      layout: lastState,
+      history: state.history.slice(0, -1),
+      future: [...state.future, currentLayout]
     });
   },
   
   redo: () => {
     const state = get();
-    if (state.historyIndex >= state.history.length - 1) return;
+    if (state.future.length === 0) return;
     
-    const newIndex = state.historyIndex + 1;
+    const currentLayout = JSON.parse(JSON.stringify(state.layout));
+    const nextState = state.future[state.future.length - 1];
+    
     set({
-      layout: JSON.parse(JSON.stringify(state.history[newIndex])),
-      historyIndex: newIndex
+      layout: nextState,
+      history: [...state.history, currentLayout],
+      future: state.future.slice(0, -1)
     });
   },
   
   saveToHistory: () => {
     const state = get();
-    const newHistory = state.history.slice(0, state.historyIndex + 1);
-    newHistory.push(JSON.parse(JSON.stringify(state.layout)));
+    const currentLayout = JSON.parse(JSON.stringify(state.layout));
+    const newHistory = [...state.history, currentLayout];
     
     if (newHistory.length > 50) {
       newHistory.shift();
@@ -413,7 +456,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     
     set({
       history: newHistory,
-      historyIndex: newHistory.length - 1
+      future: []
     });
   },
   
@@ -434,7 +477,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       layout,
       selection: { keys: new Set(), lastSelected: null, anchorKey: null },
       history: [],
-      historyIndex: -1
+      future: []
     });
   },
   
@@ -443,7 +486,7 @@ export const useEditorStore = create<EditorState>((set, get) => ({
       layout: createEmptyLayout(),
       selection: { keys: new Set(), lastSelected: null, anchorKey: null },
       history: [],
-      historyIndex: -1
+      future: []
     });
   }
 }));
