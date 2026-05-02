@@ -7,20 +7,24 @@
   --color-group-selection: #ff8800;
   --color-disabled: #999999;
   
-  /* Borders */
+  /* Colors */
   --color-border: #e0e0e0;
   --color-border-dark: #dddddd;
   --color-border-input: #cccccc;
-  
-  /* Backgrounds */
   --color-background: #f5f5f5;
   --color-background-light: #f8f8f8;
   --color-background-canvas: #fafafa;
-  
-  /* Text */
   --color-text: #666666;
   --color-text-light: #555555;
   --color-text-muted: #888888;
+  
+  /* Border Design Tokens */
+  --border-thin: 1px solid var(--color-border);
+  --border-thin-input: 1px solid var(--color-border-input);
+  --border-thin-dark: 1px solid var(--color-border-dark);
+  --border-medium: 2px solid var(--color-border);
+  --border-focus: 2px solid var(--color-selection);
+  --border-dashed: 2px dashed var(--color-disabled);
 }
 
 /* Accessibility - Screen reader only */
@@ -88,7 +92,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 4px 12px;
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-thin);
   background: var(--color-background-light);
   font-size: 13px;
 }
@@ -119,7 +123,7 @@ body {
   gap: 8px;
   padding: 8px;
   background: var(--color-white);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: var(--border-thin);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -127,7 +131,7 @@ body {
 .toolbar-group {
   display: flex;
   gap: 4px;
-  border-right: 1px solid var(--color-border);
+  border-right: var(--border-thin);
   padding-right: 8px;
 }
 
@@ -147,7 +151,7 @@ body {
 
 .toolbar-btn-grid {
   background: var(--color-border);
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   border-radius: 4px;
   padding: 6px 12px;
   cursor: pointer;
@@ -175,7 +179,7 @@ body {
   justify-content: center;
   min-width: 32px;
   background: var(--color-white);
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   opacity: 1;
   cursor: pointer;
   color: var(--color-primary);
@@ -256,7 +260,7 @@ body {
 .properties-panel {
   width: 180px;
   background: var(--color-white);
-  border-left: 1px solid var(--color-border);
+  border-left: var(--border-thin);
   padding: 8px;
   font-size: 11px;
   display: flex;
@@ -308,7 +312,7 @@ body {
 }
 
 .panel-fieldset {
-  border: 1px solid var(--color-border-dark);
+  border: var(--border-thin-dark);
   border-radius: 4px;
   padding: 8px;
   margin: 0;
@@ -360,7 +364,7 @@ body {
 .legend-row input[type="text"] {
   flex: 1;
   padding: 4px 6px;
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   border-radius: 3px;
   font-size: 11px;
   width: 100%;
@@ -370,7 +374,7 @@ body {
   width: 24px;
   height: 24px;
   padding: 0;
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   border-radius: 3px;
   cursor: pointer;
 }
@@ -378,7 +382,7 @@ body {
 .legend-row input[type="number"] {
   width: 52.5px;
   padding: 3px 4px;
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   border-radius: 3px;
   font-size: 11px;
   -moz-appearance: textfield;
@@ -404,13 +408,13 @@ body {
 }
 
 .color-mixed-placeholder {
-  border: 2px dashed var(--color-disabled);
+  border: var(--border-dashed);
   background: transparent;
 }
 
 /* Shortcuts Section */
 .shortcuts-section {
-  border-top: 1px solid var(--color-border);
+  border-top: var(--border-thin);
   padding: 8px;
   background: var(--color-background);
   font-size: 11px;
@@ -439,7 +443,7 @@ body {
   border-radius: 3px;
   font-family: monospace;
   font-size: 10px;
-  border: 1px solid var(--color-border-dark);
+  border: var(--border-thin-dark);
   margin-left: 12px;
 }
 
@@ -464,7 +468,7 @@ input.margin-left-sm {
 
 button {
   padding: 6px 12px;
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   background: var(--color-white);
   border-radius: 4px;
   cursor: pointer;
@@ -482,7 +486,7 @@ button:disabled {
 
 select {
   padding: 4px 8px;
-  border: 1px solid var(--color-border-input);
+  border: var(--border-thin-input);
   border-radius: 4px;
   font-size: 13px;
 }
