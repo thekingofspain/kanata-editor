@@ -93,7 +93,7 @@
 
 **Plans:** TBD
 
-**Status:** In Progress (Core canvas implemented)
+**Status:** In Progress (Core canvas + keyboard shortcuts implemented, ARIA remaining)
 
 ---
 
