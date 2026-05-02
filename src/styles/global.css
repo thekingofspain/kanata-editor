@@ -14,6 +14,29 @@
   --color-text-light: #555555;
 }
 
+/* Accessibility - Screen reader only */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Keyboard focus indicators */
+.key:focus {
+  outline: 2px solid var(--color-selection);
+  outline-offset: 2px;
+}
+
+.key:focus:not(:focus-visible) {
+  outline: none;
+}
+
 /* Reset & Base */
 * {
   margin: 0;

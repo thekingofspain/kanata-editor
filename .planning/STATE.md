@@ -14,7 +14,7 @@
 | **Current Phase** | Phase 3 — Editor Core (In Progress) |
 | **Current Plan** | 03-01 (Near Complete) |
 | **Status** | In Progress |
-| **Progress** | Phase 3 of 5 (~80%) |
+| **Progress** | Phase 3 of 5 (90%) |
 
 ---
 
@@ -73,7 +73,7 @@ None currently.
 - [x] Phase 3: Implement properties panel
 - [x] Phase 3: Implement keyboard shortcuts (Ctrl+C/V/X, Ctrl+G, Ctrl+M, N)
 - [x] Phase 3: Performance optimization (React Compiler handles automatically)
-- [ ] Phase 3: Accessibility improvements (ARIA labels)
+- [x] Phase 3: Accessibility improvements (ARIA labels)
 - [ ] Phase 4: Plan export pipeline
 - [ ] Phase 5: Plan polish and testing
 

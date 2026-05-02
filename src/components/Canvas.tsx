@@ -144,7 +144,18 @@ const KeyElement: React.FC<KeyElementProps> = ({
   const secondaryY = hasSecondary ? getVerticalPosition(true) * height : height * 0.3;
   
   return (
-    <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)}>
+    <g 
+      className={`key ${isSelected ? 'selected' : ''}`} 
+      data-key-id={keyData.id} 
+      transform={transform} 
+      onClick={(e) => onSelect(keyData.id, e)} 
+      onMouseDown={(e) => onDragStart(keyData.id, e)} 
+      onDoubleClick={() => onDoubleClick(keyData.id)}
+      role="button"
+      tabIndex={0}
+      aria-label={`Key ${keyData.id}: ${keyData.legend.primary || 'unnamed'} at (${keyData.x.toFixed(2)}, ${keyData.y.toFixed(2)}) ${keyData.width}x${keyData.height} units`}
+      aria-selected={isSelected}
+    >
        <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke={isSelected && isGrouped ? GROUP_SELECTED_COLOR : (isSelected ? SELECTED_COLOR : COLORS.primary)} strokeWidth={1 / BASE_SCALE} strokeDasharray={isSelected && isGrouped ? "0.15, 0.08" : "none"} />
       
 {legend.primary && hasSecondary ? (
@@ -604,8 +615,27 @@ if (e.key === 'Escape') clearSelection();
   }
   
   return (
-    <div ref={containerRef} className="canvas-container">
-      <svg ref={svgRef} width={dimensions.width} height={dimensions.height} onWheel={handleWheel} onClick={handleCanvasClick} onMouseDown={handleMouseDown} className={isPanning ? 'panning' : ''}>
+    <div 
+      ref={containerRef} 
+      className="canvas-container"
+      role="application"
+      aria-label="Keyboard layout editor"
+      aria-describedby="selection-status"
+    >
+      <div id="selection-status" className="sr-only">
+        {selection.keys.size > 0 ? `${selection.keys.size} key${selection.keys.size > 1 ? 's' : ''} selected` : 'No keys selected'}
+      </div>
+      <svg 
+        ref={svgRef} 
+        width={dimensions.width} 
+        height={dimensions.height} 
+        onWheel={handleWheel} 
+        onClick={handleCanvasClick} 
+        onMouseDown={handleMouseDown} 
+        className={isPanning ? 'panning' : ''}
+        role="group"
+        aria-label={`Keyboard canvas with ${layout.keys.length} keys`}
+      >
         <KeyShapes />
          <g transform={`translate(${pan.x}, ${pan.y}) scale(${BASE_SCALE * zoom})`}>
            <g id="grid-layer">{gridLines}</g>

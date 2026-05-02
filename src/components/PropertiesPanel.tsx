@@ -178,45 +178,53 @@ export const PropertiesPanel: React.FC = () => {
         <fieldset className="panel-fieldset">
           <legend className="panel-legend">Legend</legend>
           <div className="panel-section">
-            <label>Primary</label>
+            <label htmlFor="legend-primary">Primary</label>
             <div className="legend-row">
               {isMulti && primaryColor === '' ? (
                 <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiLegendColorChange('primaryColor', COLORS.primary)} title="Click to set color" />
               ) : (
                 <input
+                  id="legend-primary-color"
                   type="color"
                   value={typeof primaryColor === 'string' ? primaryColor : COLORS.primary}
                   onChange={(e) => handleMultiLegendColorChange('primaryColor', e.target.value)}
                   title="Primary color"
+                  aria-label="Primary legend color"
                 />
               )}
               <input
+                id="legend-primary"
                 type="text"
                 value={primaryLegend}
                 onChange={(e) => handleMultiLegendChange('primary', e.target.value)}
                 placeholder="Primary"
+                aria-label="Primary legend text"
               />
             </div>
           </div>
           
           <div className="panel-section">
-            <label>Secondary</label>
+            <label htmlFor="legend-secondary">Secondary</label>
             <div className="legend-row">
               {isMulti && secondaryColor === '' ? (
                 <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiLegendColorChange('secondaryColor', COLORS.primary)} title="Click to set color" />
               ) : (
                 <input
+                  id="legend-secondary-color"
                   type="color"
                   value={typeof secondaryColor === 'string' ? secondaryColor : COLORS.primary}
                   onChange={(e) => handleMultiLegendColorChange('secondaryColor', e.target.value)}
                   title="Secondary color"
+                  aria-label="Secondary legend color"
                 />
               )}
               <input
+                id="legend-secondary"
                 type="text"
                 value={secondaryLegend}
                 onChange={(e) => handleMultiLegendChange('secondary', e.target.value)}
                 placeholder="Secondary"
+                aria-label="Secondary legend text"
               />
             </div>
           </div>
@@ -225,59 +233,73 @@ export const PropertiesPanel: React.FC = () => {
         <fieldset className="panel-fieldset">
           <legend className="panel-legend">Dimensions</legend>
           <div className="panel-section compact">
-            <label>Size</label>
+            <label htmlFor="key-width">Size</label>
             <div className="legend-row">
-              <span>W:</span>
+              <span id="key-width-label-w">W:</span>
               <input
+                id="key-width"
                 type="number"
                 className="margin-right-sm"
                 value={width}
                 onChange={(e) => handleMultiSizeChange('width', e.target.value)}
                 step="0.25"
                 min="0.25"
+                aria-label="Key width in units"
+                aria-describedby="key-width-label-w"
               />
-              <span>H:</span>
+              <span id="key-width-label-h">H:</span>
               <input
+                id="key-height"
                 type="number"
                 value={height}
                 onChange={(e) => handleMultiSizeChange('height', e.target.value)}
                 step="0.25"
                 min="0.25"
+                aria-label="Key height in units"
+                aria-describedby="key-width-label-h"
               />
             </div>
           </div>
           
           <div className="panel-section compact">
-            <label>Angle</label>
+            <label htmlFor="key-rotation">Angle</label>
             <div className="legend-row">
               <span>°</span>
               <input
+                id="key-rotation"
                 type="number"
                 className="margin-left-sm"
                 value={rotation}
                 onChange={(e) => handleMultiRotationChange(e.target.value)}
                 step="15"
+                aria-label="Key rotation in degrees"
               />
             </div>
           </div>
           
           <div className="panel-section compact">
-            <label>Position</label>
+            <label htmlFor="key-x">Position</label>
             <div className="legend-row">
-              <span>X:</span>
+              <span id="key-x-label">X:</span>
               <input
+                id="key-x"
                 type="number"
                 className="margin-right-sm"
                 value={x}
                 onChange={(e) => handleMultiPositionChange('x', e.target.value)}
                 step="1"
+                aria-label="X position in units"
+                aria-describedby="key-x-label"
               />
-              <span>Y:</span>
+              <span id="key-y-label">Y:</span>
               <input
+                id="key-y"
                 type="number"
                 value={y}
                 onChange={(e) => handleMultiPositionChange('y', e.target.value)}
                 step="1"
+                aria-label="Y position in units"
+                aria-describedby="key-y-label"
               />
             </div>
           </div>
@@ -286,16 +308,18 @@ export const PropertiesPanel: React.FC = () => {
         <fieldset className="panel-fieldset">
           <legend className="panel-legend">Appearance</legend>
           <div className="panel-section">
-            <label>Key Color</label>
+            <label htmlFor="key-color">Key Color</label>
             <div className="legend-row">
               {isMulti && keyColor === '' ? (
                 <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiKeyColorChange(COLORS.white)} title="Click to set color" />
               ) : (
                 <input
+                  id="key-color"
                   type="color"
                   value={typeof keyColor === 'string' ? keyColor : COLORS.white}
                   onChange={(e) => handleMultiKeyColorChange(e.target.value)}
                   title="Key color"
+                  aria-label="Key background color"
                 />
               )}
             </div>
