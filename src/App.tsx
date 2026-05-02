@@ -5,10 +5,10 @@ import { StatusBar } from './components/StatusBar';
 
 function App() {
   return (
-    <div className="app" style={{ display: 'flex', flexDirection: 'column', width: '100%', height: '100%' }}>
+    <div className="app">
       <Toolbar />
-      <div style={{ flex: 1, display: 'flex', overflow: 'hidden', minHeight: 0 }}>
-        <div style={{ flex: 1, minWidth: 0 }}>
+      <div className="app-main">
+        <div className="app-canvas">
           <Canvas />
         </div>
         <PropertiesPanel />

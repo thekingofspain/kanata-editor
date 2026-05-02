@@ -1,8 +1,11 @@
-import { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { useEditorStore } from '../store';
 import { Key, DEFAULT_UNIT_SIZE } from '../types';
+import { COLORS } from '../constants';
 
 const BASE_SCALE = DEFAULT_UNIT_SIZE;
+const SELECTED_COLOR = COLORS.selection;
+const GROUP_SELECTED_COLOR = COLORS.groupSelection;
 
 const KeyShapes: React.FC = () => {
   return (
@@ -10,12 +13,12 @@ const KeyShapes: React.FC = () => {
       <rect id="key-shape-rect" width="100%" height="100%" rx="0" />
       <rect id="key-shape-rounded" width="100%" height="100%" rx="2" />
       <path id="key-shape-isoEnter" d="M0,0 h1 v0.5 h0.25 v0.5 h-0.25 v0.5 h-0.5 v-0.5 h-0.25 v-0.5 h0.25 v-0.5 Z" />
-      <rect id="key-shape-block" width="100%" height="100%" rx="0" stroke="#999" strokeWidth="0.5" />
+      <rect id="key-shape-block" width="100%" height="100%" rx="0" stroke={COLORS.disabled} strokeWidth="0.5" />
       <path id="key-shape-barrel" d="M0,0.21 a0.21,0.21 0 0 1 0.21,-0.21 h0.58 a0.21,0.21 0 0 1 0.21,0.21 v0.58 a0.21,0.21 0 0 1 -0.21,0.21 h-0.58 a0.21,0.21 0 0 1 -0.21,-0.21 z" />
-      <rect id="selection-outline" width="100%" height="100%" fill="none" stroke="#0066ff" strokeWidth="2" strokeDasharray="4,2" transform="translate(-2, -2)" />
+      <rect id="selection-outline" width="100%" height="100%" fill="none" stroke={COLORS.selection} strokeWidth="2" strokeDasharray="4,2" transform="translate(-2, -2)" />
       <g id="rotation-handle">
-        <line x1="0" y1="0" x2="0" y2="-20" stroke="#0066ff" strokeWidth="2" />
-        <circle cx="0" cy="-20" r="5" fill="#0066ff" />
+        <line x1="0" y1="0" x2="0" y2="-20" stroke={COLORS.selection} strokeWidth="2" />
+        <circle cx="0" cy="-20" r="5" fill={COLORS.selection} />
       </g>
       <filter id="key-shadow" x="-20%" y="-20%" width="140%" height="140%">
         <feDropShadow dx="1" dy="1" stdDeviation="1" floodOpacity="0.3" />
@@ -142,28 +145,28 @@ const KeyElement: React.FC<KeyElementProps> = ({
   
   return (
     <g className={`key ${isSelected ? 'selected' : ''}`} data-key-id={keyData.id} transform={transform} onClick={(e) => onSelect(keyData.id, e)} onMouseDown={(e) => onDragStart(keyData.id, e)} onDoubleClick={() => onDoubleClick(keyData.id)}>
-      <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke={isSelected && isGrouped ? "#ff8800" : (isSelected ? "#0066ff" : "#000")} strokeWidth={1 / BASE_SCALE} strokeDasharray={isSelected && isGrouped ? "0.15, 0.08" : "none"} />
+       <rect width={width} height={height} fill={keyData.color} rx={2 / BASE_SCALE} stroke={isSelected && isGrouped ? GROUP_SELECTED_COLOR : (isSelected ? SELECTED_COLOR : COLORS.primary)} strokeWidth={1 / BASE_SCALE} strokeDasharray={isSelected && isGrouped ? "0.15, 0.08" : "none"} />
       
-      {legend.primary && (
-        hasSecondary ? (
+{legend.primary && hasSecondary ? (
           <>
-            <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
+            <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || COLORS.primary} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
               {legend.primary}
             </text>
-            <text className="key-legend" x={width / 2} y={secondaryY} fill={legend.secondaryColor || '#000'} fontSize={secondaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_SECONDARY}>
-              {legend.secondary}
-            </text>
+            {legend.secondary && (
+              <text className="key-legend" x={width / 2} y={secondaryY} fill={legend.secondaryColor || COLORS.primary} fontSize={secondaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_SECONDARY}>
+                {legend.secondary}
+              </text>
+            )}
           </>
         ) : (
-          <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || '#000'} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
+          <text className="key-legend" x={width / 2} y={primaryY} fill={legend.primaryColor || COLORS.primary} fontSize={primaryFontSize} textAnchor="middle" dominantBaseline="central" fontFamily={KEY_FONT_PRIMARY}>
             {legend.primary}
           </text>
-        )
-      )}
+        )}
       
-      {isSelected && (
-        <rect x={0} y={0} width={width} height={height} fill="none" stroke={isGrouped ? "#ff8800" : "#0066ff"} strokeWidth={1 / BASE_SCALE} strokeDasharray={isGrouped ? "0.15, 0.08" : "none"} rx={2 / BASE_SCALE} />
-      )}
+       {isSelected && (
+         <rect x={0} y={0} width={width} height={height} fill="none" stroke={isGrouped ? GROUP_SELECTED_COLOR : SELECTED_COLOR} strokeWidth={1 / BASE_SCALE} strokeDasharray={isGrouped ? "0.15, 0.08" : "none"} rx={2 / BASE_SCALE} />
+       )}
     </g>
   );
 };
@@ -181,7 +184,7 @@ export const Canvas: React.FC = () => {
   const [isCloning, setIsCloning] = useState(false);
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
-  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo } = useEditorStore();
+  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo, groupKeys, ungroupKeys } = useEditorStore();
   const { pan, zoom } = canvas;
   
   useEffect(() => {
@@ -198,21 +201,25 @@ export const Canvas: React.FC = () => {
     return () => observer.disconnect();
   }, [setCanvasSize]);
   
-  const screenToCanvas = useCallback((screenX: number, screenY: number) => {
-    const rect = svgRef.current?.getBoundingClientRect();
-    const containerRect = containerRef.current?.getBoundingClientRect();
-    if (!rect || !containerRect) return { x: 0, y: 0 };
-    const x = (screenX - containerRect.left - pan.x) / (BASE_SCALE * zoom);
-    const y = (screenY - containerRect.top - pan.y) / (BASE_SCALE * zoom);
-    return { x, y };
-  }, [pan, zoom]);
+   const screenToCanvas = useCallback((screenX: number, screenY: number) => {
+     const rect = svgRef.current?.getBoundingClientRect();
+     const containerRect = containerRef.current?.getBoundingClientRect();
+     if (!rect || !containerRect) return { x: 0, y: 0 };
+     const x = (screenX - containerRect.left - pan.x) / (BASE_SCALE * zoom);
+     const y = (screenY - containerRect.top - pan.y) / (BASE_SCALE * zoom);
+     return { x, y };
+   }, [pan, zoom]);
 
-  useEffect(() => {
-    if (lastScreenPos) {
-      const pos = screenToCanvas(lastScreenPos.x, lastScreenPos.y);
-      setLastMousePos(pos);
-    }
-  }, [pan, lastScreenPos, screenToCanvas, setLastMousePos]);
+    // Calculate filtered keys (React Compiler will optimize these)
+    const unselectedKeys = layout.keys.filter(key => !selection.keys.has(key.id));
+    const selectedKeysArray = layout.keys.filter(key => selection.keys.has(key.id));
+
+   useEffect(() => {
+     if (lastScreenPos) {
+       const pos = screenToCanvas(lastScreenPos.x, lastScreenPos.y);
+       setLastMousePos(pos);
+     }
+   }, [pan, lastScreenPos, screenToCanvas, setLastMousePos]);
   
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
@@ -237,9 +244,31 @@ export const Canvas: React.FC = () => {
         redo();
       }
       
-      if (e.key === 'Escape') clearSelection();
-      
-      // Tab / Shift+Tab for selection navigation
+if (e.key === 'Escape') clearSelection();
+       
+       // Ctrl+G to group selected keys
+       if (e.key === 'g' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+         e.preventDefault();
+         const selectedIds = [...selection.keys];
+         if (selectedIds.length > 1) {
+           groupKeys(selectedIds);
+         }
+       }
+       
+// Ctrl+Shift+G to ungroup selected keys
+        if (e.key === 'G' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          const selectedIds = [...selection.keys];
+          const uniqueGroupIds = [...new Set(selectedIds.map(id => {
+            const key = layout.keys.find(k => k.id === id);
+            return key?.groupId;
+          }).filter(Boolean))];
+          uniqueGroupIds.forEach(groupId => {
+            if (groupId) ungroupKeys(groupId);
+          });
+        }
+       
+       // Tab / Shift+Tab for selection navigation
       if (e.key === 'Tab' && layout.keys.length > 0) {
         e.preventDefault();
         const selectedIds = [...selection.keys];
@@ -321,40 +350,53 @@ export const Canvas: React.FC = () => {
     }
   }, [zoom, pan, setCanvasZoom, setCanvasPan]);
   
-  const handleKeySelect = (keyId: string, e: React.MouseEvent) => {
-    e.stopPropagation();
-    const clickedKey = layout.keys.find(k => k.id === keyId);
-    if (!clickedKey) return;
-    
-    if (e.shiftKey) {
-      const isSelected = selection.keys.has(keyId);
-      if (isSelected) {
-        const newKeys = new Set(selection.keys);
-        newKeys.delete(keyId);
-        selectKeys([...newKeys]);
-      } else {
-        selectKeys([...selection.keys, keyId]);
-      }
-    } else if (clickedKey.groupId) {
-      // Clicking on a key in a group
-      const groupKeyIds = layout.keys.filter(k => k.groupId === clickedKey.groupId).map(k => k.id);
-      const allGroupKeysSelected = groupKeyIds.every(id => selection.keys.has(id));
-      if (allGroupKeysSelected) {
-        // All keys in group already selected - deselect the group
-        const newKeys = new Set(selection.keys);
-        groupKeyIds.forEach(id => newKeys.delete(id));
-        selectKeys([...newKeys]);
-      } else {
-        // Select the whole group
-        selectKeys(groupKeyIds);
-      }
-    } else if (selection.keys.has(keyId)) {
-      // Clicking on an already selected ungrouped key - deselect it
-      clearSelection();
-    } else {
-      selectKey(keyId);
-    }
-  };
+   // Helper function to get all key IDs in a group
+   const getGroupKeyIds = (groupId: string): string[] => {
+     return layout.keys
+       .filter(k => k.groupId === groupId)
+       .map(k => k.id);
+   };
+
+   // Helper function to check if all keys in a group are selected
+   const areAllGroupKeysSelected = (groupId: string): boolean => {
+     const groupKeyIds = getGroupKeyIds(groupId);
+     return groupKeyIds.every(id => selection.keys.has(id));
+   };
+
+   const handleKeySelect = (keyId: string, e: React.MouseEvent) => {
+     e.stopPropagation();
+     const clickedKey = layout.keys.find(k => k.id === keyId);
+     if (!clickedKey) return;
+     
+     if (e.shiftKey) {
+       const isSelected = selection.keys.has(keyId);
+       if (isSelected) {
+         const newKeys = new Set(selection.keys);
+         newKeys.delete(keyId);
+         selectKeys([...newKeys]);
+       } else {
+         selectKeys([...selection.keys, keyId]);
+       }
+     } else if (clickedKey.groupId) {
+       // Clicking on a key in a group
+       if (areAllGroupKeysSelected(clickedKey.groupId)) {
+         // All keys in group already selected - deselect the group
+         const groupKeyIds = getGroupKeyIds(clickedKey.groupId);
+         const newKeys = new Set(selection.keys);
+         groupKeyIds.forEach(id => newKeys.delete(id));
+         selectKeys([...newKeys]);
+       } else {
+         // Select the whole group
+         const groupKeyIds = getGroupKeyIds(clickedKey.groupId);
+         selectKeys(groupKeyIds);
+       }
+     } else if (selection.keys.has(keyId)) {
+       // Clicking on an already selected ungrouped key - deselect it
+       clearSelection();
+     } else {
+       selectKey(keyId);
+     }
+   };
   
   const handleKeyDoubleClick = (keyId: string) => {
     const key = layout.keys.find(k => k.id === keyId);
@@ -534,18 +576,18 @@ export const Canvas: React.FC = () => {
     <div ref={containerRef} className="canvas-container">
       <svg ref={svgRef} width={dimensions.width} height={dimensions.height} onWheel={handleWheel} onClick={handleCanvasClick} onMouseDown={handleMouseDown} className={isPanning ? 'panning' : ''}>
         <KeyShapes />
-        <g transform={`translate(${pan.x}, ${pan.y}) scale(${BASE_SCALE * zoom})`}>
-          <g id="grid-layer">{gridLines}</g>
-          <g id="keys-layer">
-            {layout.keys.filter(key => !selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={false} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
-            ))}
-          </g>
-          <g id="selected-keys-layer">
-            {layout.keys.filter(key => selection.keys.has(key.id)).map(key => (
-              <KeyElement key={key.id} keyData={key} isSelected={true} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
-            ))}
-          </g>
+         <g transform={`translate(${pan.x}, ${pan.y}) scale(${BASE_SCALE * zoom})`}>
+           <g id="grid-layer">{gridLines}</g>
+            <g id="keys-layer">
+              {unselectedKeys.map((key: Key) => (
+                <KeyElement key={key.id} keyData={key} isSelected={false} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              ))}
+            </g>
+            <g id="selected-keys-layer">
+              {selectedKeysArray.map((key: Key) => (
+                <KeyElement key={key.id} keyData={key} isSelected={true} isGrouped={!!key.groupId} onSelect={handleKeySelect} onDragStart={handleDragStart} onDoubleClick={handleKeyDoubleClick} />
+              ))}
+           </g>
           {selectionBox && (
             <rect x={Math.min(selectionBox.start.x, selectionBox.end.x)} y={Math.min(selectionBox.start.y, selectionBox.end.y)} width={Math.abs(selectionBox.end.x - selectionBox.start.x)} height={Math.abs(selectionBox.end.y - selectionBox.start.y)} fill="rgba(0, 102, 255, 0.1)" stroke="#0066ff" strokeWidth={1 / (BASE_SCALE * zoom)} strokeDasharray={`${4 / (BASE_SCALE * zoom)},${2 / (BASE_SCALE * zoom)}`} />
           )}

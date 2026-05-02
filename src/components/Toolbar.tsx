@@ -1,100 +1,52 @@
+import React, { useState, ReactNode } from 'react';
 import { useEditorStore } from '../store';
 import { STANDARD_KEY_SIZES, KEYBOARD_PRESETS, loadPreset } from '../types';
-import { useState } from 'react';
 
 const IconButton: React.FC<{
   onClick: () => void;
   disabled?: boolean;
   pressed?: boolean;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }> = ({ onClick, disabled, pressed, title, children }) => (
   <button
+    className={`icon-btn ${pressed ? 'pressed' : ''}`}
     onClick={onClick}
     disabled={disabled}
     title={title}
-    style={{
-      padding: '6px 8px',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minWidth: '32px',
-      background: pressed ? '#e0e0e0' : '#fff',
-      border: pressed ? '1px solid #888' : '1px solid #ccc',
-      opacity: disabled ? 0.4 : 1,
-      cursor: disabled ? 'not-allowed' : 'pointer',
-      color: disabled ? '#999' : '#000'
-    }}
   >
     {children}
   </button>
 );
 
-const CopyIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <rect x="9" y="9" width="13" height="13" rx="2" />
-    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+const Icon: React.FC<{ children: ReactNode; stroke?: string; strokeWidth?: number; strokeDasharray?: string }> = ({ children, stroke, strokeWidth, strokeDasharray }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={stroke || "currentColor"} strokeWidth={strokeWidth || 2} strokeDasharray={strokeDasharray}>
+    {children}
   </svg>
 );
 
-const PasteIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" />
-    <rect x="8" y="2" width="8" height="4" rx="1" />
-  </svg>
-);
+const makeIcon = (paths: ReactNode) => () => <Icon>{paths}</Icon>;
 
-const CutIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <circle cx="6" cy="6" r="3" />
-    <circle cx="6" cy="18" r="3" />
-    <line x1="20" y1="4" x2="8.12" y2="15.88" />
-    <line x1="14.47" y1="14.48" x2="20" y2="20" />
-    <line x1="8.12" y1="8.12" x2="12" y2="12" />
-  </svg>
-);
-
-const MirrorIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M12 3v18" />
-    <path d="M8 6l-4 6 4 6" />
-    <path d="M16 6l4 6-4 6" />
-  </svg>
-);
+const CopyIcon = makeIcon(<><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></>);
+const PasteIcon = makeIcon(<><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2" /><rect x="8" y="2" width="8" height="4" rx="1" /></>);
+const CutIcon = makeIcon(<><circle cx="6" cy="6" r="3" /><circle cx="6" cy="18" r="3" /><line x1="20" y1="4" x2="8.12" y2="15.88" /><line x1="14.47" y1="14.48" x2="20" y2="20" /><line x1="8.12" y1="8.12" x2="12" y2="12" /></>);
+const MirrorIcon = makeIcon(<><path d="M12 3v18" /><path d="M8 6l-4 6 4 6" /><path d="M16 6l4 6-4 6" /></>);
+const UndoIcon = makeIcon(<><path d="M3 7v6h6" /><path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.58 2.56L3 13" /></>);
+const RedoIcon = makeIcon(<><path d="M21 7v6h-6" /><path d="M3 17a9 9 0 019-9 9 9 0 016.58 2.56L21 13" /></>);
 
 const GroupIcon: React.FC<{ filled?: boolean; disabled?: boolean }> = ({ filled, disabled }) => {
   const isEnabled = !disabled;
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : "#ff8800"} strokeWidth={filled && isEnabled ? 2.5 : 2} strokeDasharray={filled && isEnabled ? "2 1" : "none"}>
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
-    </svg>
+    <Icon stroke={disabled ? "#999" : "#ff8800"} strokeWidth={filled && isEnabled ? 2.5 : 2} strokeDasharray={filled && isEnabled ? "2 1" : undefined}>
+      <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><rect x="14" y="14" width="7" height="7" />
+    </Icon>
   );
 };
 
 const UngroupIcon: React.FC<{ selected?: boolean; disabled?: boolean }> = ({ selected, disabled }) => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={disabled ? "#999" : (selected ? "#0066ff" : "currentColor")} strokeWidth={selected ? 2.5 : 2}>
-    <rect x="3" y="3" width="7" height="7" />
-    <rect x="14" y="3" width="7" height="7" />
-    <rect x="3" y="14" width="7" height="7" />
-    <line x1="10" y1="10" x2="14" y2="14" strokeDasharray="2 2" />
-  </svg>
-);
-
-const UndoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M3 7v6h6" />
-    <path d="M21 17a9 9 0 00-9-9 9 9 0 00-6.58 2.56L3 13" />
-  </svg>
-);
-
-const RedoIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <path d="M21 7v6h-6" />
-    <path d="M3 17a9 9 0 019-9 9 9 0 016.58 2.56L21 13" />
-  </svg>
+  <Icon stroke={disabled ? "#999" : (selected ? "#0066ff" : undefined)} strokeWidth={selected ? 2.5 : 2}>
+    <rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /><line x1="10" y1="10" x2="14" y2="14" strokeDasharray="2 2" />
+  </Icon>
 );
 
 export const Toolbar: React.FC = () => {
@@ -202,31 +154,23 @@ const handleAddKey = () => {
     }
   };
 
-  const hasSelection = selection.keys.size > 0;
-  const hasMultipleSelection = selection.keys.size > 1;
-  const hasGroupedSelection = hasSelection && [...selection.keys].some(id => {
-    const key = layout.keys.find(k => k.id === id);
-    return key && key.groupId;
-  });
-  const canGroup = hasMultipleSelection && !([...selection.keys].every(id => {
-    const key = layout.keys.find(k => k.id === id);
-    return key && key.groupId;
-  }));
-  const groupButtonDisabled = !canGroup;
-  const ungroupButtonDisabled = !hasGroupedSelection;
+    // Calculate expensive values (React Compiler will optimize these)
+    const hasSelection = selection.keys.size > 0;
+    const hasGroupedSelection = selection.keys.size > 0 && [...selection.keys].some(id => {
+      const key = layout.keys.find(k => k.id === id);
+      return key && key.groupId;
+    });
+    const canGroup = selection.keys.size > 1 && !([...selection.keys].every(id => {
+      const key = layout.keys.find(k => k.id === id);
+      return key && key.groupId;
+    }));
+    const groupButtonDisabled = !canGroup;
+    const ungroupButtonDisabled = !hasGroupedSelection;
 
-  return (
-    <div className="toolbar" style={{
-      display: 'flex',
-      gap: '8px',
-      padding: '8px',
-      background: '#fff',
-      borderBottom: '1px solid #e0e0e0',
-      flexWrap: 'wrap',
-      alignItems: 'center'
-    }}>
+return (
+    <div className="toolbar">
       {/* File operations */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
+      <div className="toolbar-group">
         <button onClick={newLayout}>New</button>
         <button onClick={() => {
           const json = JSON.stringify(layout, null, 2);
@@ -240,8 +184,8 @@ const handleAddKey = () => {
       </div>
 
       {/* Preset keyboard layouts */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <select value={selectedPreset} onChange={handlePresetChange}>
+      <div className="toolbar-group">
+        <select className="toolbar-select" value={selectedPreset} onChange={handlePresetChange}>
           <option value="">Load Preset...</option>
           {KEYBOARD_PRESETS.map(preset => (
             <option key={preset.name} value={preset.name}>{preset.name}</option>
@@ -249,112 +193,106 @@ const handleAddKey = () => {
         </select>
       </div>
 
-      {/* Key operations */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <button onClick={handleAddKey} title="Add Key (N)">+ Key</button>
-        <button onClick={handleDelete} disabled={!hasSelection} title="Delete (Del)">Delete</button>
-        <button onClick={selectAll} title="Select All (Ctrl+A)">Select All</button>
-        <button onClick={clearSelection} disabled={!hasSelection} title="Deselect (Esc)">Deselect</button>
-      </div>
+       {/* Key operations */}
+       <div className="toolbar-group">
+         <button onClick={handleAddKey} title="Add Key (N)">+ Key</button>
+          <button onClick={handleDelete} disabled={!hasSelection} title="Delete (Del)">Delete</button>
+          <button onClick={selectAll} title="Select All (Ctrl+A)">Select All</button>
+          <button onClick={clearSelection} disabled={!hasSelection} title="Deselect (Esc)">Deselect</button>
+       </div>
 
-      {/* Copy/Paste/Cut/Mirror - with icons */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={copySelection} disabled={!hasSelection} title="Copy (Ctrl+C)">
-          <CopyIcon />
-        </IconButton>
-        <IconButton onClick={paste} title="Paste (Ctrl+V)">
-          <PasteIcon />
-        </IconButton>
-        <IconButton onClick={cutSelection} disabled={!hasSelection} title="Cut (Ctrl+X)">
-          <CutIcon />
-        </IconButton>
-        <IconButton onClick={() => mirrorSelection(false)} disabled={!hasSelection} title="Mirror (Ctrl+M)">
-          <MirrorIcon />
-        </IconButton>
-      </div>
+       {/* Copy/Paste/Cut/Mirror - with icons */}
+       <div className="toolbar-group">
+          <IconButton onClick={copySelection} disabled={!hasSelection} title="Copy (Ctrl+C)">
+            <CopyIcon />
+          </IconButton>
+          <IconButton onClick={paste} title="Paste (Ctrl+V)">
+            <PasteIcon />
+          </IconButton>
+          <IconButton onClick={cutSelection} disabled={!hasSelection} title="Cut (Ctrl+X)">
+            <CutIcon />
+          </IconButton>
+          <IconButton onClick={() => mirrorSelection(false)} disabled={!hasSelection} title="Mirror (Ctrl+M)">
+            <MirrorIcon />
+          </IconButton>
+       </div>
 
-      {/* Group/Ungroup in the middle */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={handleGroup} disabled={groupButtonDisabled} title="Group (Ctrl+G)">
-          <GroupIcon filled={hasGroupedSelection} disabled={groupButtonDisabled} />
-        </IconButton>
-        <IconButton onClick={handleUngroup} disabled={ungroupButtonDisabled} title="Ungroup (Ctrl+Shift+G)">
-          <UngroupIcon selected={hasGroupedSelection} disabled={ungroupButtonDisabled} />
-        </IconButton>
-      </div>
+       {/* Group/Ungroup in the middle */}
+       <div className="toolbar-group">
+          <IconButton onClick={handleGroup} disabled={groupButtonDisabled} title="Group (Ctrl+G)">
+            <GroupIcon filled={hasGroupedSelection} disabled={groupButtonDisabled} />
+          </IconButton>
+          <IconButton onClick={handleUngroup} disabled={ungroupButtonDisabled} title="Ungroup (Ctrl+Shift+G)">
+            <UngroupIcon selected={hasGroupedSelection} disabled={ungroupButtonDisabled} />
+          </IconButton>
+       </div>
 
-      {/* Undo/Redo */}
-      <div style={{ display: 'flex', gap: '4px', borderRight: '1px solid #e0e0e0', paddingRight: '8px' }}>
-        <IconButton onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)">
-          <UndoIcon />
-        </IconButton>
-        <IconButton onClick={redo} disabled={future.length === 0} title="Redo (Ctrl+Y)">
-          <RedoIcon />
-        </IconButton>
-      </div>
+     {/* Undo/Redo */}
+     <div className="toolbar-group">
+       <IconButton onClick={undo} disabled={history.length === 0} title="Undo (Ctrl+Z)">
+         <UndoIcon />
+       </IconButton>
+       <IconButton onClick={redo} disabled={future.length === 0} title="Redo (Ctrl+Y)">
+         <RedoIcon />
+       </IconButton>
+     </div>
 
-      {/* View controls - right aligned */}
-      <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto' }}>
-        <button 
-          onClick={toggleGrid} 
-          title="Toggle Grid (G)"
-          style={{
-            background: grid.enabled ? '#e0e0e0' : '#fff',
-            border: '1px solid #ccc',
-            borderRadius: '4px',
-            padding: '6px 12px',
-            cursor: 'pointer',
-            fontSize: '12px'
-          }}
-        >
-          Grid
-        </button>
-      </div>
+     {/* View controls - right aligned */}
+     <div className="toolbar-spacer">
+       <button 
+         className={`toolbar-btn-grid ${grid.enabled ? 'active' : ''}`}
+         onClick={toggleGrid} 
+         title="Toggle Grid (G)"
+       >
+         Grid
+       </button>
+     </div>
 
-      {/* Key size selector */}
-      <div style={{ display: 'flex', gap: '4px' }}>
-        <select 
-          onChange={(e) => {
-            const width = parseFloat(e.target.value);
-            setCurrentKeyWidth(width);
-            if (selection.keys.size > 0) {
-              selection.keys.forEach(id => {
-                updateKey(id, { width });
-              });
-            }
-          }}
-          disabled={selection.keys.size === 0}
-          value={selection.keys.size > 0 ? [...selection.keys][0] ? layout.keys.find(k => k.id === [...selection.keys][0])?.width || 1 : 1 : currentKeyWidth}
-        >
-          {STANDARD_KEY_SIZES.map(size => (
-            <option key={size} value={size}>{size}U</option>
-          ))}
-        </select>
-        
-        {/* Rotation input */}
-        {selection.keys.size > 0 && (
-          <input
-            type="number"
-            step="15"
-            style={{ width: '60px', padding: '4px 8px' }}
-            value={selection.keys.size > 0 ? [...selection.keys][0] ? layout.keys.find(k => k.id === [...selection.keys][0])?.rotation || 0 : 0 : 0}
-            onChange={(e) => {
-              const rotation = parseFloat(e.target.value) || 0;
-              selection.keys.forEach(id => {
-                updateKey(id, { rotation });
-              });
-            }}
-            title="Rotation angle (Alt+Arrow to adjust)"
-          />
-        )}
-      </div>
+     {/* Key size selector */}
+     <div className="toolbar-group">
+       <select 
+         className="toolbar-select"
+         onChange={(e) => {
+           const width = parseFloat(e.target.value);
+           setCurrentKeyWidth(width);
+           if (selection.keys.size > 0) {
+             selection.keys.forEach(id => {
+               updateKey(id, { width });
+             });
+           }
+         }}
+         disabled={selection.keys.size === 0}
+         value={selection.keys.size > 0 ? [...selection.keys][0] ? layout.keys.find(k => k.id === [...selection.keys][0])?.width || 1 : 1 : currentKeyWidth}
+       >
+         {STANDARD_KEY_SIZES.map(size => (
+           <option key={size} value={size}>{size}U</option>
+         ))}
+       </select>
+       
+       {/* Rotation input */}
+       {selection.keys.size > 0 && (
+         <input
+           type="number"
+           className="toolbar-input-narrow"
+           step="15"
+           value={selection.keys.size > 0 ? [...selection.keys][0] ? layout.keys.find(k => k.id === [...selection.keys][0])?.rotation || 0 : 0 : 0}
+           onChange={(e) => {
+             const rotation = parseFloat(e.target.value) || 0;
+             selection.keys.forEach(id => {
+               updateKey(id, { rotation });
+             });
+           }}
+           title="Rotation angle (Alt+Arrow to adjust)"
+         />
+       )}
+     </div>
 
-      {/* Layout info */}
-      <div style={{ marginLeft: 'auto', fontSize: '12px', color: '#666' }}>
-        {layout.keys.length} keys | {selection.keys.size} selected
-      </div>
-    </div>
-  );
+     {/* Layout info */}
+     <div className="toolbar-info">
+       {layout.keys.length} keys | {selection.keys.size} selected
+     </div>
+   </div>
+ );
 };
 
 export default Toolbar;

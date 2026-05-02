@@ -1,6 +1,7 @@
 import { useEditorStore } from '../store';
 import { Key } from '../types';
 import { useState, useRef, useEffect } from 'react';
+import { COLORS } from '../constants';
 
 function getCommonValue<T>(keys: Key[], getter: (k: Key) => T): T | '' {
   const values = keys.map(getter);
@@ -54,36 +55,19 @@ export const PropertiesPanel: React.FC = () => {
     if (isCollapsed) {
       return (
         <div
-          style={{
-            width: '20px',
-            background: '#f5f5f5',
-            borderLeft: '3px solid #ddd',
-            cursor: 'ew-resize',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          className="properties-panel-collapsed"
           onClick={() => { setIsCollapsed(false); setPanelWidth(280); }}
           title="Expand panel"
         >
-          <div style={{ writingMode: 'vertical-rl', fontSize: '10px', color: '#666' }}>Panel</div>
+          <div className="panel-collapsed-text">Panel</div>
         </div>
       );
     }
     return (
       <div className="properties-panel" style={{ width: panelWidth }}>
         <div
+          className="panel-resize-handle"
           onMouseDown={handleDragStart}
-          style={{
-            position: 'absolute',
-            left: 0,
-            top: 0,
-            bottom: 0,
-            width: '6px',
-            cursor: 'ew-resize',
-            background: 'transparent',
-            zIndex: 10
-          }}
           title="Drag to resize"
         />
         <div className="panel-empty">No key selected</div>
@@ -138,18 +122,16 @@ export const PropertiesPanel: React.FC = () => {
     updateAll({ [field]: num });
   };
   
-  const primaryColor = getValue(k => k.legend.primaryColor || '#000000');
+  const primaryColor = getValue(k => k.legend.primaryColor || COLORS.primary);
   const primaryLegend = getValue(k => k.legend.primary || '');
-  const secondaryColor = getValue(k => k.legend.secondaryColor || '#000000');
+  const secondaryColor = getValue(k => k.legend.secondaryColor || COLORS.primary);
   const secondaryLegend = getValue(k => k.legend.secondary || '');
-  const keyColor = getValue(k => k.color || '#ffffff');
+  const keyColor = getValue(k => k.color || COLORS.white);
   const width = getValue(k => k.width);
   const height = getValue(k => k.height);
   const rotation = getValue(k => k.rotation);
   const x = getValue(k => k.x);
   const y = getValue(k => k.y);
-  const mixedColorStyle = { border: '2px dashed #999', background: 'transparent' };
-  
   const shortcuts = [
     { key: 'Ctrl+A', action: 'Select All' },
     { key: 'Ctrl+C', action: 'Copy' },
@@ -171,37 +153,20 @@ export const PropertiesPanel: React.FC = () => {
   if (isCollapsed) {
     return (
       <div
-        style={{
-          width: '20px',
-          background: '#f5f5f5',
-          borderLeft: '3px solid #ddd',
-          cursor: 'ew-resize',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
+        className="properties-panel-collapsed"
         onClick={() => { setIsCollapsed(false); setPanelWidth(280); }}
         title="Expand panel"
       >
-        <div style={{ writingMode: 'vertical-rl', fontSize: '10px', color: '#666' }}>Panel</div>
+        <div className="panel-collapsed-text">Panel</div>
       </div>
     );
   }
 
   return (
-    <div className="properties-panel" style={{ display: 'flex', flexDirection: 'column', height: '100%', width: panelWidth, position: 'relative' }}>
+    <div className="properties-panel-full" style={{ width: panelWidth }}>
       <div
+        className="panel-resize-handle"
         onMouseDown={handleDragStart}
-        style={{
-          position: 'absolute',
-          left: 0,
-          top: 0,
-          bottom: 0,
-          width: '6px',
-          cursor: 'ew-resize',
-          background: 'transparent',
-          zIndex: 10
-        }}
         title="Drag to resize"
       />
       {isMulti && (
@@ -209,18 +174,18 @@ export const PropertiesPanel: React.FC = () => {
       )}
       
       {/* Top half - Properties */}
-      <div style={{ flex: 1, overflow: 'auto', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '4px', padding: '8px', margin: 0 }}>
-          <legend style={{ fontSize: '10px', color: '#666', fontWeight: 600 }}>Legend</legend>
+      <div className="panel-content">
+        <fieldset className="panel-fieldset">
+          <legend className="panel-legend">Legend</legend>
           <div className="panel-section">
             <label>Primary</label>
             <div className="legend-row">
               {isMulti && primaryColor === '' ? (
-                <div className="color-mixed" onClick={() => handleMultiLegendColorChange('primaryColor', '#000000')} style={mixedColorStyle} title="Click to set color" />
+                <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiLegendColorChange('primaryColor', COLORS.primary)} title="Click to set color" />
               ) : (
                 <input
                   type="color"
-                  value={typeof primaryColor === 'string' ? primaryColor : '#000000'}
+                  value={typeof primaryColor === 'string' ? primaryColor : COLORS.primary}
                   onChange={(e) => handleMultiLegendColorChange('primaryColor', e.target.value)}
                   title="Primary color"
                 />
@@ -238,11 +203,11 @@ export const PropertiesPanel: React.FC = () => {
             <label>Secondary</label>
             <div className="legend-row">
               {isMulti && secondaryColor === '' ? (
-                <div className="color-mixed" onClick={() => handleMultiLegendColorChange('secondaryColor', '#000000')} style={mixedColorStyle} title="Click to set color" />
+                <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiLegendColorChange('secondaryColor', COLORS.primary)} title="Click to set color" />
               ) : (
                 <input
                   type="color"
-                  value={typeof secondaryColor === 'string' ? secondaryColor : '#000000'}
+                  value={typeof secondaryColor === 'string' ? secondaryColor : COLORS.primary}
                   onChange={(e) => handleMultiLegendColorChange('secondaryColor', e.target.value)}
                   title="Secondary color"
                 />
@@ -257,19 +222,19 @@ export const PropertiesPanel: React.FC = () => {
           </div>
         </fieldset>
         
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '4px', padding: '8px', margin: 0 }}>
-          <legend style={{ fontSize: '10px', color: '#666', fontWeight: 600 }}>Dimensions</legend>
+        <fieldset className="panel-fieldset">
+          <legend className="panel-legend">Dimensions</legend>
           <div className="panel-section compact">
             <label>Size</label>
             <div className="legend-row">
               <span>W:</span>
               <input
                 type="number"
+                className="margin-right-sm"
                 value={width}
                 onChange={(e) => handleMultiSizeChange('width', e.target.value)}
                 step="0.25"
                 min="0.25"
-                style={{ marginRight: '6px' }}
               />
               <span>H:</span>
               <input
@@ -288,10 +253,10 @@ export const PropertiesPanel: React.FC = () => {
               <span>°</span>
               <input
                 type="number"
+                className="margin-left-sm"
                 value={rotation}
                 onChange={(e) => handleMultiRotationChange(e.target.value)}
                 step="15"
-                style={{ marginLeft: '0px' }}
               />
             </div>
           </div>
@@ -302,10 +267,10 @@ export const PropertiesPanel: React.FC = () => {
               <span>X:</span>
               <input
                 type="number"
+                className="margin-right-sm"
                 value={x}
                 onChange={(e) => handleMultiPositionChange('x', e.target.value)}
                 step="1"
-                style={{ marginRight: '6px' }}
               />
               <span>Y:</span>
               <input
@@ -318,17 +283,17 @@ export const PropertiesPanel: React.FC = () => {
           </div>
         </fieldset>
         
-        <fieldset style={{ border: '1px solid #ddd', borderRadius: '4px', padding: '8px', margin: 0 }}>
-          <legend style={{ fontSize: '10px', color: '#666', fontWeight: 600 }}>Appearance</legend>
+        <fieldset className="panel-fieldset">
+          <legend className="panel-legend">Appearance</legend>
           <div className="panel-section">
             <label>Key Color</label>
             <div className="legend-row">
               {isMulti && keyColor === '' ? (
-                <div className="color-mixed" onClick={() => handleMultiKeyColorChange('#ffffff')} style={mixedColorStyle} title="Click to set color" />
+                <div className="color-mixed color-mixed-placeholder" onClick={() => handleMultiKeyColorChange(COLORS.white)} title="Click to set color" />
               ) : (
                 <input
                   type="color"
-                  value={typeof keyColor === 'string' ? keyColor : '#ffffff'}
+                  value={typeof keyColor === 'string' ? keyColor : COLORS.white}
                   onChange={(e) => handleMultiKeyColorChange(e.target.value)}
                   title="Key color"
                 />
@@ -339,25 +304,12 @@ export const PropertiesPanel: React.FC = () => {
       </div>
       
       {/* Bottom half - Shortcuts */}
-      <div style={{ 
-        borderTop: '1px solid #e0e0e0', 
-        padding: '8px',
-        background: '#f5f5f5',
-        fontSize: '11px'
-      }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+      <div className="shortcuts-section">
+        <div className="shortcuts-list">
           {shortcuts.map(({ key, action }) => (
-            <div key={key} style={{ display: 'flex', alignItems: 'center' }}>
-              <span style={{ color: '#666', textAlign: 'right', minWidth: '80px' }}>{action}</span>
-              <span style={{ 
-                background: '#fff', 
-                padding: '2px 4px', 
-                borderRadius: '3px',
-                fontFamily: 'monospace',
-                fontSize: '10px',
-                border: '1px solid #ddd',
-                marginLeft: '12px'
-              }}>{key}</span>
+            <div key={key} className="shortcut-row">
+              <span className="shortcut-action">{action}</span>
+              <span className="shortcut-key">{key}</span>
             </div>
           ))}
         </div>

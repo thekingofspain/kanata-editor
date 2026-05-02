@@ -16,6 +16,7 @@ export function StatusBar() {
     }
     const container = document.querySelector('.canvas-container');
     if (!container) return;
+    
     const rect = container.getBoundingClientRect();
     const padding = 40;
     let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
@@ -33,31 +34,23 @@ export function StatusBar() {
   };
 
   return (
-    <div className="status-bar" style={{
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      padding: '4px 12px',
-      borderTop: '1px solid #e0e0e0',
-      background: '#f8f8f8',
-      fontSize: '13px'
-    }}>
+    <div className="status-bar">
       <span>{Math.round(canvas.pan.x)}, {Math.round(canvas.pan.y)}</span>
       
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-        <button onClick={handleZoomOut} title="Zoom Out" style={{ padding: '2px 8px' }}>-</button>
+      <div className="status-bar-controls">
+        <button className="status-bar-btn" onClick={handleZoomOut} title="Zoom Out">-</button>
         <input
           type="number"
+          className="status-bar-input"
           value={Math.round(canvas.zoom * 100)}
           onChange={(e) => {
             const val = parseInt(e.target.value) || 100;
             setCanvasZoom(Math.max(25, Math.min(400, val)) / 100);
           }}
-          style={{ width: '50px', textAlign: 'center', padding: '2px 4px' }}
         />
-        <button onClick={handleZoomIn} title="Zoom In" style={{ padding: '2px 8px' }}>+</button>
+        <button className="status-bar-btn" onClick={handleZoomIn} title="Zoom In">+</button>
         <span>%</span>
-        <button onClick={handleFit} title="Fit to Window" style={{ marginLeft: '8px' }}>Fit</button>
+        <button className="status-bar-fit" onClick={handleFit} title="Fit to Window">Fit</button>
       </div>
     </div>
   );
