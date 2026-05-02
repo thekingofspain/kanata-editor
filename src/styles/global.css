@@ -1,17 +1,26 @@
-/* CSS Variables */
+/* CSS Variables - Theme Colors */
 :root {
+  /* Core colors */
   --color-primary: #000000;
   --color-white: #ffffff;
   --color-selection: #0066ff;
   --color-group-selection: #ff8800;
   --color-disabled: #999999;
+  
+  /* Borders */
   --color-border: #e0e0e0;
   --color-border-dark: #dddddd;
+  --color-border-input: #cccccc;
+  
+  /* Backgrounds */
   --color-background: #f5f5f5;
   --color-background-light: #f8f8f8;
   --color-background-canvas: #fafafa;
+  
+  /* Text */
   --color-text: #666666;
   --color-text-light: #555555;
+  --color-text-muted: #888888;
 }
 
 /* Accessibility - Screen reader only */
@@ -79,8 +88,8 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 4px 12px;
-  border-top: 1px solid #e0e0e0;
-  background: #f8f8f8;
+  border-top: 1px solid var(--color-border);
+  background: var(--color-background-light);
   font-size: 13px;
 }
 
@@ -109,8 +118,8 @@ body {
   display: flex;
   gap: 8px;
   padding: 8px;
-  background: #fff;
-  border-bottom: 1px solid #e0e0e0;
+  background: var(--color-white);
+  border-bottom: 1px solid var(--color-border);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -118,7 +127,7 @@ body {
 .toolbar-group {
   display: flex;
   gap: 4px;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid var(--color-border);
   padding-right: 8px;
 }
 
@@ -133,12 +142,12 @@ body {
 .toolbar-info {
   margin-left: auto;
   font-size: 12px;
-  color: #666;
+  color: var(--color-text);
 }
 
 .toolbar-btn-grid {
-  background: #e0e0e0;
-  border: 1px solid #ccc;
+  background: var(--color-border);
+  border: 1px solid var(--color-border-input);
   border-radius: 4px;
   padding: 6px 12px;
   cursor: pointer;
@@ -146,7 +155,7 @@ body {
 }
 
 .toolbar-btn-grid:not(.active) {
-  background: #fff;
+  background: var(--color-white);
 }
 
 .toolbar-select {
@@ -165,22 +174,22 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 32px;
-  background: #fff;
-  border: 1px solid #ccc;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-input);
   opacity: 1;
   cursor: pointer;
-  color: #000;
+  color: var(--color-primary);
 }
 
 .icon-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
-  color: #999;
+  color: var(--color-disabled);
 }
 
 .icon-btn.pressed {
-  background: #e0e0e0;
-  border: 1px solid #888;
+  background: var(--color-border);
+  border: 1px solid #888888;
 }
 
 /* Canvas */
@@ -189,7 +198,7 @@ body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: #fafafa;
+  background: var(--color-background-canvas);
 }
 
 .canvas-container.panning {
@@ -208,7 +217,7 @@ body {
 
 .selection-box {
   fill: rgba(0, 102, 255, 0.1);
-  stroke: #0066ff;
+  stroke: var(--color-selection);
   stroke-width: 1;
   stroke-dasharray: 4 2;
 }
@@ -246,8 +255,8 @@ body {
 /* Properties Panel */
 .properties-panel {
   width: 180px;
-  background: #fff;
-  border-left: 1px solid #e0e0e0;
+  background: var(--color-white);
+  border-left: 1px solid var(--color-border);
   padding: 8px;
   font-size: 11px;
   display: flex;
@@ -265,8 +274,8 @@ body {
 
 .properties-panel-collapsed {
   width: 20px;
-  background: #f5f5f5;
-  border-left: 3px solid #ddd;
+  background: var(--color-background);
+  border-left: 3px solid var(--color-border-dark);
   cursor: ew-resize;
   display: flex;
   align-items: center;
@@ -276,7 +285,7 @@ body {
 .panel-collapsed-text {
   writing-mode: vertical-rl;
   font-size: 10px;
-  color: #666;
+  color: var(--color-text);
 }
 
 .panel-resize-handle {
@@ -299,7 +308,7 @@ body {
 }
 
 .panel-fieldset {
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-dark);
   border-radius: 4px;
   padding: 8px;
   margin: 0;
@@ -307,7 +316,7 @@ body {
 
 .panel-legend {
   font-size: 10px;
-  color: #666;
+  color: var(--color-text);
   font-weight: 600;
 }
 
@@ -324,7 +333,7 @@ body {
 
 .panel-section label {
   font-weight: 600;
-  color: #666;
+  color: var(--color-text);
   font-size: 10px;
   text-transform: uppercase;
 }
@@ -332,11 +341,11 @@ body {
 .panel-row {
   display: flex;
   gap: 12px;
-  color: #333;
+  color: var(--color-text-light);
 }
 
 .panel-empty, .panel-info {
-  color: #888;
+  color: var(--color-text-muted);
   text-align: center;
   padding: 20px 0;
 }
@@ -351,7 +360,7 @@ body {
 .legend-row input[type="text"] {
   flex: 1;
   padding: 4px 6px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-input);
   border-radius: 3px;
   font-size: 11px;
   width: 100%;
@@ -361,7 +370,7 @@ body {
   width: 24px;
   height: 24px;
   padding: 0;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-input);
   border-radius: 3px;
   cursor: pointer;
 }
@@ -369,7 +378,7 @@ body {
 .legend-row input[type="number"] {
   width: 52.5px;
   padding: 3px 4px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-input);
   border-radius: 3px;
   font-size: 11px;
   -moz-appearance: textfield;
@@ -382,7 +391,7 @@ body {
 }
 
 .legend-row span {
-  color: #555;
+  color: var(--color-text-light);
   font-size: 10px;
   min-width: 16px;
 }
@@ -395,15 +404,15 @@ body {
 }
 
 .color-mixed-placeholder {
-  border: 2px dashed #999;
+  border: 2px dashed var(--color-disabled);
   background: transparent;
 }
 
 /* Shortcuts Section */
 .shortcuts-section {
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--color-border);
   padding: 8px;
-  background: #f5f5f5;
+  background: var(--color-background);
   font-size: 11px;
 }
 
@@ -419,18 +428,18 @@ body {
 }
 
 .shortcut-action {
-  color: #666;
+  color: var(--color-text);
   text-align: right;
   min-width: 80px;
 }
 
 .shortcut-key {
-  background: #fff;
+  background: var(--color-white);
   padding: 2px 4px;
   border-radius: 3px;
   font-family: monospace;
   font-size: 10px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--color-border-dark);
   margin-left: 12px;
 }
 
@@ -455,15 +464,15 @@ input.margin-left-sm {
 
 button {
   padding: 6px 12px;
-  border: 1px solid #ccc;
-  background: #fff;
+  border: 1px solid var(--color-border-input);
+  background: var(--color-white);
   border-radius: 4px;
   cursor: pointer;
   font-size: 13px;
 }
 
 button:hover:not(:disabled) {
-  background: #f0f0f0;
+  background: var(--color-background-light);
 }
 
 button:disabled {
@@ -473,7 +482,7 @@ button:disabled {
 
 select {
   padding: 4px 8px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border-input);
   border-radius: 4px;
   font-size: 13px;
 }
