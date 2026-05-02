@@ -184,7 +184,7 @@ export const Canvas: React.FC = () => {
   const [isCloning, setIsCloning] = useState(false);
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
-  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo, groupKeys, ungroupKeys } = useEditorStore();
+  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo, groupKeys, ungroupKeys, copySelection, paste, cutSelection, mirrorSelection, addKey } = useEditorStore();
   const { pan, zoom } = canvas;
   
   useEffect(() => {
@@ -245,8 +245,39 @@ export const Canvas: React.FC = () => {
       }
       
 if (e.key === 'Escape') clearSelection();
-       
-       // Ctrl+G to group selected keys
+
+        // Ctrl+C to copy
+        if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          copySelection();
+        }
+
+        // Ctrl+V to paste
+        if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          paste();
+        }
+
+        // Ctrl+X to cut
+        if (e.key === 'x' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          cutSelection();
+        }
+
+        // Ctrl+M to mirror
+        if (e.key === 'm' && (e.ctrlKey || e.metaKey)) {
+          e.preventDefault();
+          mirrorSelection(false);
+        }
+
+        // N to add new key
+        if (e.key === 'n' && !e.ctrlKey && !e.metaKey) {
+          e.preventDefault();
+          const newKey = addKey(0, 0);
+          selectKey(newKey.id);
+        }
+        
+        // Ctrl+G to group selected keys
        if (e.key === 'g' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
          e.preventDefault();
          const selectedIds = [...selection.keys];
@@ -327,7 +358,7 @@ if (e.key === 'Escape') clearSelection();
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, updateKeys, setCanvasPan, pan, zoom, undo, redo]);
+  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, updateKeys, setCanvasPan, pan, zoom, undo, redo, copySelection, paste, cutSelection, mirrorSelection, addKey]);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {

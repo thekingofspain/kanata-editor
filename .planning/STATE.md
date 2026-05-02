@@ -12,9 +12,9 @@
 | Field | Value |
 |-------|-------|
 | **Current Phase** | Phase 3 — Editor Core (In Progress) |
-| **Current Plan** | 03-01 (In Progress) |
+| **Current Plan** | 03-01 (Near Complete) |
 | **Status** | In Progress |
-| **Progress** | Phase 3 of 5 (60%) |
+| **Progress** | Phase 3 of 5 (~80%) |
 
 ---
 
@@ -70,7 +70,10 @@ None currently.
 - [x] Phase 3: Implement key selection (click, Shift+click, drag rectangle)
 - [x] Phase 3: Implement pan (arrow keys, mouse, wheel)
 - [x] Phase 3: Implement zoom (fit, +/-, keys)
-- [ ] Phase 3: Plan remaining editor features
+- [x] Phase 3: Implement properties panel
+- [x] Phase 3: Implement keyboard shortcuts (Ctrl+C/V/X, Ctrl+G, Ctrl+M, N)
+- [ ] Phase 3: Performance optimization (React.memo, useMemo for 100+ keys)
+- [ ] Phase 3: Accessibility improvements (ARIA labels)
 - [ ] Phase 4: Plan export pipeline
 - [ ] Phase 5: Plan polish and testing
 
@@ -142,26 +145,32 @@ None currently.
 
 ### Phase 3: Editor Core — In Progress
 
-**Output:** Canvas implementation, toolbar, store
+**Output:** Canvas implementation, toolbar, store, properties panel
 
 **Artifacts:**
 - Canvas.tsx — SVG-based canvas with base-1 coordinate system
 - Toolbar.tsx — Zoom controls, add/delete keys, keyboard shortcuts
+- PropertiesPanel.tsx — Key property editing (legend, color, dimensions, rotation)
 - store/index.ts — State management for layout, selection, canvas
-- index.css — Global styles extracted from inline code
+- styles/global.css — Consolidated styles with CSS variables
+- constants.ts — Centralized color and layout constants
 
 **Implemented Features:**
 - Base-1 coordinate system (1U = 1 key width) with SVG transform for zoom/pan
 - Key selection: click, Shift+click (toggle), drag rectangle
 - Pan: arrow keys, mouse drag, mouse wheel
 - Zoom: fit button, +/- keys, 0 to reset, mouse wheel
-- Key movement with dimension-proportional nudging
+- Key movement with dimension-proportional nudging (arrow keys, Shift fine, Ctrl resize, Alt rotate)
 - Mouse position display in U units
+- Keyboard shortcuts: Ctrl+C/V/X (copy/paste/cut), Ctrl+G/Shift+G (group/ungroup), Ctrl+M (mirror), N (new key), Delete, Ctrl+A, Escape, Tab
+- Copy/paste creates independent duplicate keys
+- Mirror creates copy with 180° rotation inversion
+- Group/ungroup operations
 
 **GSD Structure:**
 - `.planning/phases/03-editor-core/CONTEXT.md` created
 
-**Status:** Core canvas implemented, more features in progress
+**Status:** Core canvas + properties panel implemented, keyboard shortcuts complete
 
 ---
 
