@@ -11,10 +11,10 @@
 
 | Field | Value |
 |-------|-------|
-| **Current Phase** | Phase 3 — Editor Core (Complete) |
-| **Current Plan** | 03-01 (Complete) |
-| **Status** | Ready to advance |
-| **Progress** | Phase 3 of 5 (100%) |
+| **Current Phase** | Phase 4 — Export & Persistence (In Progress) |
+| **Current Plan** | 04-01 (Starting) |
+| **Status** | In Progress |
+| **Progress** | Phase 4 of 5 (0%) |
 
 ---
 
@@ -170,7 +170,23 @@ None currently.
 **GSD Structure:**
 - `.planning/phases/03-editor-core/CONTEXT.md` created
 
-**Status:** Core canvas + properties panel implemented, keyboard shortcuts complete
+**Status:** Complete (2026-05-02)
+
+---
+
+### Phase 4: Export & Persistence — In Progress
+
+**Output:** Export pipeline and save/load functionality
+
+**Requirements:**
+- EXP-SVG-01 through EXP-SVG-04: SVG export
+- EXP-PNG-01 through EXP-PNG-03: PNG export  
+- EXP-JSON-01 through EXP-JSON-03: JSON export
+- EXP-KANATA-01 through EXP-KANATA-03: kanata config export
+- EXP-QMK-01, EXP-QMK-02: QMK keymap export
+- IO-01 through IO-05: File save/load, LocalStorage
+
+**Status:** Planning/execution starting
 
 ---
 
