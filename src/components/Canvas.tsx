@@ -541,7 +541,11 @@ if (e.key === 'Escape') clearSelection();
       const selectedIds = layout.keys.filter(k => 
         k.x < maxX && k.x + k.width > minX && k.y < maxY && k.y + k.height > minY
       ).map(k => k.id);
-      if (selectedIds.length > 0) selectKeys(selectedIds);
+      if (selectedIds.length > 0) {
+        selectKeys(selectedIds);
+      } else {
+        clearSelection();
+      }
       setSelectionBox(null);
     }
   }, [isDragging, isPanning, selectionBox, layout.keys, selectKeys]);
