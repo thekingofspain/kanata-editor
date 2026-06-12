@@ -617,7 +617,7 @@ if (e.key === 'Escape') clearSelection();
   return (
     <div 
       ref={containerRef} 
-      className="canvas-container"
+      className={'canvas-container' + (isPanning ? ' panning' : '')}
       role="application"
       aria-label="Keyboard layout editor"
       aria-describedby="selection-status"
@@ -632,7 +632,6 @@ if (e.key === 'Escape') clearSelection();
         onWheel={handleWheel} 
         onClick={handleCanvasClick} 
         onMouseDown={handleMouseDown} 
-        className={isPanning ? 'panning' : ''}
         role="group"
         aria-label={`Keyboard canvas with ${layout.keys.length} keys`}
       >
