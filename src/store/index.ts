@@ -356,11 +356,13 @@ export const useEditorStore = create<EditorState>((set, get) => ({
     }), { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity });
     
     const centerX = (bounds.minX + bounds.maxX) / 2;
+    const centerY = (bounds.minY + bounds.maxY) / 2;
     
     const newKeys = selectedKeys.map(k => ({
       ...k,
       id: generateId(),
-      x: horizontal ? k.x : centerX * 2 - k.x - k.width,
+      x: horizontal ? centerX * 2 - k.x - k.width : k.x,
+      y: horizontal ? k.y : centerY * 2 - k.y - k.height,
       rotation: (k.rotation + 180) % 360
     }));
     
