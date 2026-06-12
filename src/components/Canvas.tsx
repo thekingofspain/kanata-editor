@@ -491,7 +491,7 @@ if (e.key === 'Escape') clearSelection();
       setIsCloning(false);
       setIsDragging(true);
       // Get the newly cloned keys (these are already selected by duplicateSelection)
-      const newSelection = [...selection.keys];
+      const newSelection = [...useEditorStore.getState().selection.keys];
       setDragKeyId(newSelection[0] || null);
       setDragStart({ x: e.clientX, y: e.clientY });
       // Clear selection - only cloned keys should be selected (they were just created by duplicateSelection)
