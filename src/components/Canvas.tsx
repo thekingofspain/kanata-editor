@@ -15,14 +15,6 @@ const KeyShapes: React.FC = () => {
       <path id="key-shape-isoEnter" d="M0,0 h1 v0.5 h0.25 v0.5 h-0.25 v0.5 h-0.5 v-0.5 h-0.25 v-0.5 h0.25 v-0.5 Z" />
       <rect id="key-shape-block" width="100%" height="100%" rx="0" stroke={COLORS.disabled} strokeWidth="0.5" />
       <path id="key-shape-barrel" d="M0,0.21 a0.21,0.21 0 0 1 0.21,-0.21 h0.58 a0.21,0.21 0 0 1 0.21,0.21 v0.58 a0.21,0.21 0 0 1 -0.21,0.21 h-0.58 a0.21,0.21 0 0 1 -0.21,-0.21 z" />
-      <rect id="selection-outline" width="100%" height="100%" fill="none" stroke={COLORS.selection} strokeWidth="2" strokeDasharray="4,2" transform="translate(-2, -2)" />
-      <g id="rotation-handle">
-        <line x1="0" y1="0" x2="0" y2="-20" stroke={COLORS.selection} strokeWidth="2" />
-        <circle cx="0" cy="-20" r="5" fill={COLORS.selection} />
-      </g>
-      <filter id="key-shadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="1" dy="1" stdDeviation="1" floodOpacity="0.3" />
-      </filter>
     </defs>
   );
 };
@@ -195,8 +187,29 @@ export const Canvas: React.FC = () => {
   const [isCloning, setIsCloning] = useState(false);
   const [lastScreenPos, setLastScreenPos] = useState<{ x: number; y: number } | null>(null);
   
-  const { layout, canvas, grid, selection, updateKey, updateKeys, selectKey, selectKeys, clearSelection, setCanvasPan, setCanvasZoom, setLastMousePos, setCanvasSize, removeKeys, duplicateSelection, undo, redo, groupKeys, ungroupKeys, copySelection, paste, cutSelection, mirrorSelection, addKey } = useEditorStore();
+  const layout = useEditorStore(s => s.layout);
+  const canvas = useEditorStore(s => s.canvas);
+  const grid = useEditorStore(s => s.grid);
+  const selection = useEditorStore(s => s.selection);
+  const updateKey = useEditorStore(s => s.updateKey);
+  const selectKey = useEditorStore(s => s.selectKey);
+  const selectKeys = useEditorStore(s => s.selectKeys);
+  const clearSelection = useEditorStore(s => s.clearSelection);
+  const setCanvasPan = useEditorStore(s => s.setCanvasPan);
+  const setCanvasZoom = useEditorStore(s => s.setCanvasZoom);
+  const setLastMousePos = useEditorStore(s => s.setLastMousePos);
+  const setCanvasSize = useEditorStore(s => s.setCanvasSize);
+  const duplicateSelection = useEditorStore(s => s.duplicateSelection);
   const { pan, zoom } = canvas;
+
+  const selectionRef = useRef(selection);
+  selectionRef.current = selection;
+  const layoutKeysRef = useRef(layout.keys);
+  layoutKeysRef.current = layout.keys;
+  const panRef = useRef(pan);
+  panRef.current = pan;
+  const zoomRef = useRef(zoom);
+  zoomRef.current = zoom;
   
   useEffect(() => {
     const updateDimensions = () => {
@@ -234,114 +247,111 @@ export const Canvas: React.FC = () => {
   
   useEffect(() => {
     const handleKeyDown = async (e: KeyboardEvent) => {
+      const store = useEditorStore.getState();
+      const sel = selectionRef.current;
+      const keys = layoutKeysRef.current;
+      const p = panRef.current;
+      const z = zoomRef.current;
+      
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       
       if (e.key === 'Delete' || e.key === 'Backspace') {
-        if (selection.keys.size > 0) removeKeys([...selection.keys]);
+        if (sel.keys.size > 0) store.removeKeys([...sel.keys]);
       }
       
       if (e.key === 'a' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        selectKeys(layout.keys.map(k => k.id));
+        store.selectKeys(keys.map(k => k.id));
       }
       
       if ((e.key === 'z') && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
         e.preventDefault();
-        undo();
+        store.undo();
       }
       
       if ((e.key === 'y' && (e.ctrlKey || e.metaKey)) || ((e.key === 'z') && (e.ctrlKey || e.metaKey) && e.shiftKey)) {
         e.preventDefault();
-        redo();
+        store.redo();
       }
       
-if (e.key === 'Escape') clearSelection();
+      if (e.key === 'Escape') store.clearSelection();
 
-        // Ctrl+C to copy
-        if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          copySelection();
-        }
-
-        // Ctrl+V to paste
-        if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          paste();
-        }
-
-        // Ctrl+X to cut
-        if (e.key === 'x' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          cutSelection();
-        }
-
-        // Ctrl+M to mirror
-        if (e.key === 'm' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          mirrorSelection(false);
-        }
-
-        // N to add new key
-        if (e.key === 'n' && !e.ctrlKey && !e.metaKey) {
-          e.preventDefault();
-          const newKey = addKey(0, 0);
-          selectKey(newKey.id);
-        }
-        
-        // Ctrl+G to group selected keys
-       if (e.key === 'g' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
-         e.preventDefault();
-         const selectedIds = [...selection.keys];
-         if (selectedIds.length > 1) {
-           groupKeys(selectedIds);
-         }
-       }
-       
-// Ctrl+Shift+G to ungroup selected keys
-        if (e.key === 'G' && (e.ctrlKey || e.metaKey)) {
-          e.preventDefault();
-          const selectedIds = [...selection.keys];
-          const uniqueGroupIds = [...new Set(selectedIds.map(id => {
-            const key = layout.keys.find(k => k.id === id);
-            return key?.groupId;
-          }).filter(Boolean))];
-          uniqueGroupIds.forEach(groupId => {
-            if (groupId) ungroupKeys(groupId);
-          });
-        }
-       
-       // Tab / Shift+Tab for selection navigation
-      if (e.key === 'Tab' && layout.keys.length > 0) {
+      if (e.key === 'c' && (e.ctrlKey || e.metaKey)) {
         e.preventDefault();
-        const selectedIds = [...selection.keys];
+        store.copySelection();
+      }
+
+      if (e.key === 'v' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        store.paste();
+      }
+
+      if (e.key === 'x' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        store.cutSelection();
+      }
+
+      if (e.key === 'm' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        store.mirrorSelection(false);
+      }
+
+      if (e.key === 'n' && !e.ctrlKey && !e.metaKey) {
+        e.preventDefault();
+        const newKey = store.addKey(0, 0);
+        store.selectKey(newKey.id);
+      }
+      
+      if (e.key === 'g' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {
+        e.preventDefault();
+        const selectedIds = [...sel.keys];
+        if (selectedIds.length > 1) {
+          store.groupKeys(selectedIds);
+        }
+      }
+      
+      if (e.key === 'G' && (e.ctrlKey || e.metaKey)) {
+        e.preventDefault();
+        const selectedIds = [...sel.keys];
+        const uniqueGroupIds = [...new Set(selectedIds.map(id => {
+          const key = keys.find(k => k.id === id);
+          return key?.groupId;
+        }).filter(Boolean))];
+        uniqueGroupIds.forEach(groupId => {
+          if (groupId) store.ungroupKeys(groupId);
+        });
+      }
+      
+      if (e.key === 'Tab' && keys.length > 0) {
+        e.preventDefault();
+        const selectedIds = [...sel.keys];
         if (selectedIds.length === 0) {
-          selectKey(layout.keys[0].id);
+          store.selectKey(keys[0].id);
         } else {
-          const lastSelected = selection.lastSelected;
-          const currentIndex = lastSelected ? layout.keys.findIndex(k => k.id === lastSelected) : -1;
+          const lastSelected = sel.lastSelected;
+          const currentIndex = lastSelected ? keys.findIndex(k => k.id === lastSelected) : -1;
           let nextIndex: number;
           if (e.shiftKey) {
-            nextIndex = currentIndex <= 0 ? layout.keys.length - 1 : currentIndex - 1;
+            nextIndex = currentIndex <= 0 ? keys.length - 1 : currentIndex - 1;
           } else {
-            nextIndex = currentIndex >= layout.keys.length - 1 ? 0 : currentIndex + 1;
+            nextIndex = currentIndex >= keys.length - 1 ? 0 : currentIndex + 1;
           }
-          selectKey(layout.keys[nextIndex].id);
+          store.selectKey(keys[nextIndex].id);
         }
       }
       
-      // Pan with arrow keys when nothing is selected
-      if (selection.keys.size === 0) {
-        const panSpeed = 50 * zoom;
-        if (e.key === 'ArrowUp') { e.preventDefault(); setCanvasPan({ x: pan.x, y: pan.y - panSpeed }); }
-        if (e.key === 'ArrowDown') { e.preventDefault(); setCanvasPan({ x: pan.x, y: pan.y + panSpeed }); }
-        if (e.key === 'ArrowLeft') { e.preventDefault(); setCanvasPan({ x: pan.x - panSpeed, y: pan.y }); }
-        if (e.key === 'ArrowRight') { e.preventDefault(); setCanvasPan({ x: pan.x + panSpeed, y: pan.y }); }
+      if (sel.keys.size === 0) {
+        const panSpeed = 50 * z;
+        if (e.key === 'ArrowUp') { e.preventDefault(); store.setCanvasPan({ x: p.x, y: p.y - panSpeed }); }
+        if (e.key === 'ArrowDown') { e.preventDefault(); store.setCanvasPan({ x: p.x, y: p.y + panSpeed }); }
+        if (e.key === 'ArrowLeft') { e.preventDefault(); store.setCanvasPan({ x: p.x - panSpeed, y: p.y }); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); store.setCanvasPan({ x: p.x + panSpeed, y: p.y }); }
       }
       
-      if (selection.keys.size > 0) {
+      if (sel.keys.size > 0) {
         const shiftNudge = e.shiftKey ? 0.25 : 1;
         const currentLayout = useEditorStore.getState().layout;
-        const keyIds = [...selection.keys];
+        const keyIds = [...sel.keys];
         const updates = keyIds.map(id => {
           const key = currentLayout.keys.find(k => k.id === id);
           if (!key) return null;
@@ -362,14 +372,14 @@ if (e.key === 'Escape') clearSelection();
         
         if (updates.length > 0) {
           e.preventDefault();
-          updateKeys(updates);
+          store.updateKeys(updates);
         }
       }
     };
     
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selection.keys, selection.lastSelected, layout.keys, removeKeys, selectKey, selectKeys, clearSelection, updateKey, updateKeys, setCanvasPan, pan, zoom, undo, redo, copySelection, paste, cutSelection, mirrorSelection, addKey]);
+  }, []);
   
   // Handle keyup to cancel cloning if user releases Ctrl
   useEffect(() => {
