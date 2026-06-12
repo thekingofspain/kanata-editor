@@ -10,7 +10,9 @@ function getCommonValue<T>(keys: Key[], getter: (k: Key) => T): T | '' {
 }
 
 export const PropertiesPanel: React.FC = () => {
-  const { selection, layout, updateKey } = useEditorStore();
+  const selection = useEditorStore(s => s.selection);
+  const layout = useEditorStore(s => s.layout);
+  const updateKey = useEditorStore(s => s.updateKey);
   const [panelWidth, setPanelWidth] = useState(280);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const dragRef = useRef<number>(0);
