@@ -9,7 +9,7 @@ import {
   DEFAULT_KEY_COLOR
 } from '../types';
 
-const generateId = () => Math.random().toString(36).substring(2, 11);
+const generateId = () => crypto.randomUUID();
 
 interface EditorState {
   layout: KeyboardLayout;
